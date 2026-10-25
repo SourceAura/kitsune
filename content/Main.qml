@@ -129,11 +129,25 @@ Rectangle {
     }
 
     // ---- The ground -----------------------------------------------------
+    // The port veils BOTH layers (2026-10-25, the captain's word: the
+    // current wallpaper shows through the lock, blurred for privacy).
+    // In the shell the theme-local copy stood raw beneath the manager's
+    // blurred still; standing alone it would have shown the picture
+    // plain at the door. Same blur, same dimming, same easing as hers.
     Image {
         anchors.fill: parent
         source: "Backgrounds/wallpaper.jpg"
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            blurEnabled: true
+            blur: root._leaving ? 0.3 : 0.9
+            blurMax: 64
+            brightness: root._leaving ? -0.05 : -0.25
+            Behavior on blur { NumberAnimation { duration: 380; easing.type: Easing.OutQuad } }
+            Behavior on brightness { NumberAnimation { duration: 380; easing.type: Easing.OutQuad } }
+        }
     }
     Image {
         anchors.fill: parent

@@ -47,4 +47,13 @@ git -C "$STAGE" -c user.email=local@jurai -c user.name=jurai-local \
 ryostore remove lockscreens kitsune >/dev/null 2>&1 || true
 rm -rf "$HOME/.local/share/qylock/themes/kitsune"
 ryostore install lockscreens kitsune
+
+# Her ground on this machine: the theme-local Backgrounds seat, linked
+# to the current wallpaper — the lock shows it blurred (his word).
+WP="$(python3 -c "import json; print(json.load(open('$HOME/.config/jurai/wallpaper.json'))['path'])" 2>/dev/null || true)"
+if [ -n "$WP" ] && [ -f "$WP" ]; then
+    mkdir -p "$HOME/.local/share/qylock/themes/kitsune/Backgrounds"
+    ln -sf "$WP" "$HOME/.local/share/qylock/themes/kitsune/Backgrounds/wallpaper.jpg"
+    echo "sync-local: ground linked -> $WP"
+fi
 echo "sync-local: kitsune seated from $REPO"

@@ -41,3 +41,12 @@ The port's own hand, kept as small as the Fūin port's:
     /var/lib/valence-greeter/wallpaper.jpg. Neither is bundled —
     where neither exists she stands on the veiled dark, exactly
     as the sealed resting state was drawn.
+  * The ground's veil (v1.0.1, the captain's word the day she
+    landed: the current wallpaper shows through the lock, blurred
+    for privacy): the theme-local layer now wears the same
+    MultiEffect blur and dimming as the manager layer. In the
+    shell it stood raw beneath the blurred still; standing alone
+    in a store theme it would have shown the picture plain at
+    the door. On Ryoku her Backgrounds seat is a symlink to the
+    current wallpaper, re-struck by tools/sync-local.sh after
+    every install.
