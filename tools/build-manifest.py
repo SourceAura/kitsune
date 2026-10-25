@@ -5,7 +5,7 @@ Usage: build-manifest.py <product-dir>
 
 The store folder for a lockscreen is laid out as:
 
-    lockscreens/fuin/
+    lockscreens/kitsune/
         content/     the theme (Main.qml, theme.conf, fonts, ...)
         assets/      preview art (not installed)
         manifest.json
@@ -52,10 +52,10 @@ for dirpath, dirs, names in os.walk(root):
 files.sort(key=lambda f: f["source"])
 manifest = {
     "schema": 1,
-    "id": "fuin",
+    "id": "kitsune",
     "category": "lockscreens",
     "version": "1.0.0",
-    "destination": "qylock/themes/fuin",
+    "destination": "qylock/themes/kitsune",
     "files": files,
 }
 out = json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
