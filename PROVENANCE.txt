@@ -50,3 +50,9 @@ The port's own hand, kept as small as the Fūin port's:
     the door. On Ryoku her Backgrounds seat is a symlink to the
     current wallpaper, re-struck by tools/sync-local.sh after
     every install.
+  * v1.0.2, the same day, also his art direction: the card fan
+    rides 44 units lower in InseiScene (her arc centre), nested
+    closer over Ase's head, and the hint line above the arc —
+    "read the sigils · invoke your sequence", half-eaten by the
+    centre card as built — is lifted clear so it reads whole.
+    Two numbers changed; nothing else of hers moved.

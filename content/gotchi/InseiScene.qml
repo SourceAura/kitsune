@@ -61,7 +61,11 @@ Item {
     readonly property real _aseY: height * 0.42
 
     readonly property real _arcCX: _cx
-    readonly property real _arcCY: _aseY - 20
+    // The captain's landing-day art direction (2026-10-25): the fan
+    // rides lower, nested closer over Ase's head, and the hint line
+    // above the arc — hers, "read the sigils · invoke your sequence" —
+    // stands clear of the cards and can be read whole.
+    readonly property real _arcCY: _aseY + 24
     readonly property real _arcR:  180
 
     readonly property real _whisperY: _aseY + _aseH + 10
@@ -70,7 +74,7 @@ Item {
     // ── Instruction hint — fades after first tap ──────────────────────
     Text {
         x:       root._cx - implicitWidth / 2
-        y:       root._arcCY - root._arcR - 32
+        y:       root._arcCY - root._arcR - 84
         text:    "read the sigils · invoke your sequence"
         opacity: root.lockedCount === 0 && !root.setupMode ? 0.38 : 0.0
         Behavior on opacity { NumberAnimation { duration: 600 } }
@@ -83,7 +87,7 @@ Item {
     // Setup instruction
     Text {
         x:       root._cx - implicitWidth / 2
-        y:       root._arcCY - root._arcR - 32
+        y:       root._arcCY - root._arcR - 84
         text:    root.setupPhase2 ? "draw the same sequence to confirm the binding" : "inscribe your sequence across the seven folds"
         opacity: root.setupMode ? 0.38 : 0.0
         Behavior on opacity { NumberAnimation { duration: 600 } }
