@@ -1,5 +1,7 @@
 # Kitsune
 
+> **Part of [Jurai](https://github.com/SourceAura/jurai-suite)** — a living desktop ecosystem by 0xSrcAura. This piece is one of its public doors.
+
 Ase, the seven-tailed kitsune, and her seven tarot folds — a lockscreen
 and greeter theme for SDDM (and for Ryoku's session lock, which speaks
 the same idiom).
