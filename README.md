@@ -20,3 +20,11 @@ did not.
 Install (RyoStore): the `kitsune` lockscreen. On Ryoku she seats
 herself for both the session lock and — once SDDM's Current names
 her — the login door.
+
+## Her sister door
+
+Kitsune is one of a pair. Her sister is [Fūin](https://github.com/SourceAura/fuin)
+— Jurai's Threshold, the lock face of the Jurai shell: the wallpaper
+blurred behind a drawn veil, a password field breathing prism light.
+Kitsune greets; Fūin guards. Two wards of the same house, speaking the
+same gate idiom.
