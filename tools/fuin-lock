@@ -1,0 +1,8 @@
+#!/bin/sh
+# fuin-lock — set the desktop down in the tmpfs, then lock.
+# Kitsune's ground reads the capture at the lock's instant; without
+# one she falls back to the wallpaper under the same veil. The file
+# lives in the runtime tmpfs: overwritten at every lock, gone at
+# logout, never sent anywhere.
+grim "/run/user/$(id -u)/fuin-desktop.png" 2>/dev/null
+exec ryoku-shell lock
