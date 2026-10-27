@@ -109,3 +109,9 @@ The port's own hand, kept as small as the Fūin port's:
     panel: the gate switch, the attempt limit for the showing,
     whether a key is set, and a plain account of what the gate
     does and where its standing choices live.
+  * 2026-10-27 — the panel is a hint now: the bottom-left word
+    reads "hint", the panel is titled "MANTRA GATE — THE HINT",
+    and the four corner words (hint, mantra, reboot, power off)
+    bloom on hover — a soft shadow off the word itself, easing
+    in and out. The mantra word is part of its switch now:
+    hovering or clicking the word works the toggle.

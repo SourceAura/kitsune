@@ -670,7 +670,7 @@ Rectangle {
 
     }
 
-    // ---- Settings: the face explains itself ------------------------------
+    // ---- The hint: the face explains itself --------------------------------
     Row {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
@@ -678,11 +678,20 @@ Rectangle {
         anchors.bottomMargin: 16
         z: 2
         Text {
-            text: "settings"
+            text: "hint"
             color: Qt.alpha(root.palText, settingsArea.containsMouse ? 0.9 : 0.45)
             font.family: "3270 Nerd Font Mono, Fira Code, monospace"
             font.pixelSize: 11
             font.letterSpacing: 1.5
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: Qt.alpha(root.palPrimary, 0.9)
+                shadowBlur: settingsArea.containsMouse ? 0.75 : 0.0
+                shadowOpacity: settingsArea.containsMouse ? 0.95 : 0.0
+                Behavior on shadowBlur { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                Behavior on shadowOpacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+            }
             MouseArea { id: settingsArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                         onClicked: root._settingsOpen = !root._settingsOpen }
         }
@@ -709,7 +718,7 @@ Rectangle {
             spacing: 11
 
             Text {
-                text: "MANTRA GATE — SETTINGS"
+                text: "MANTRA GATE — THE HINT"
                 color: root.palText
                 font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                 font.pixelSize: 12
@@ -834,10 +843,20 @@ Rectangle {
             Text {
                 text: "mantra"
                 anchors.verticalCenter: parent.verticalCenter
-                color: Qt.alpha(root.palText, root._gateOn ? 0.9 : 0.45)
+                color: Qt.alpha(root.palText, (mantraLabelArea.containsMouse || mantraArea.containsMouse) ? 0.95 : (root._gateOn ? 0.9 : 0.45))
                 font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                 font.pixelSize: 11
                 font.letterSpacing: 1.5
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: Qt.alpha(root.palPrimary, 0.9)
+                    shadowBlur: (mantraLabelArea.containsMouse || mantraArea.containsMouse) ? 0.75 : 0.0
+                    shadowOpacity: (mantraLabelArea.containsMouse || mantraArea.containsMouse) ? 0.95 : 0.0
+                    Behavior on shadowBlur { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                    Behavior on shadowOpacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                }
+                MouseArea { id: mantraLabelArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root._toggleGate() }
             }
             Rectangle {
                 width: 30; height: 16; radius: 8
@@ -853,7 +872,7 @@ Rectangle {
                     color: root._gateOn ? root.palPrimary : Qt.alpha(root.palText, 0.45)
                     Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                 }
-                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root._toggleGate() }
+                MouseArea { id: mantraArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root._toggleGate() }
             }
         }
         Text {
@@ -862,6 +881,15 @@ Rectangle {
             font.family: "3270 Nerd Font Mono, Fira Code, monospace"
             font.pixelSize: 11
             font.letterSpacing: 1.5
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: Qt.alpha(root.palPrimary, 0.9)
+                shadowBlur: rebootArea.containsMouse ? 0.75 : 0.0
+                shadowOpacity: rebootArea.containsMouse ? 0.95 : 0.0
+                Behavior on shadowBlur { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                Behavior on shadowOpacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+            }
             MouseArea { id: rebootArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: sddm.reboot() }
         }
         Text {
@@ -870,6 +898,15 @@ Rectangle {
             font.family: "3270 Nerd Font Mono, Fira Code, monospace"
             font.pixelSize: 11
             font.letterSpacing: 1.5
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: Qt.alpha(root.palPrimary, 0.9)
+                shadowBlur: powerArea.containsMouse ? 0.75 : 0.0
+                shadowOpacity: powerArea.containsMouse ? 0.95 : 0.0
+                Behavior on shadowBlur { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                Behavior on shadowOpacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+            }
             MouseArea { id: powerArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: sddm.powerOff() }
         }
     }
