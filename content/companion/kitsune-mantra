@@ -3,4 +3,4 @@
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 KITSUNE_MANTRA_DIR="$here"
 export KITSUNE_MANTRA_DIR
-exec qs -p "$here"
+exec qs -p "$here/run"

@@ -10,13 +10,13 @@ FloatingWindow {
 
     Loader {
         anchors.fill: parent
-        source: Qt.resolvedUrl("MantraSetup.qml")
+        source: "file://" + Quickshell.configDir.replace(/\/[^/]*$/, "") + "/MantraSetup.qml"
         onLoaded: {
             const e = Quickshell.env("KITSUNE_THEME_CONF");
             item.confPath = e && e.length > 0 ? e
                 : Quickshell.env("HOME") + "/.local/share/qylock/themes/kitsune/theme.conf";
             const dir = Quickshell.env("KITSUNE_MANTRA_DIR")
-                || Qt.resolvedUrl(".").toString().replace("file://", "");
+                || Quickshell.configDir.replace(/\/[^/]*$/, "");
             item.writerPath = dir + "/mantraconf.py";
         }
     }
