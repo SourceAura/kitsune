@@ -82,3 +82,10 @@ The port's own hand, kept as small as the Fūin port's:
     itself. The switch at the bottom right lifts the gate for one
     showing. Shipped off; the public theme.conf carries no one's
     order and no key.
+  * 2026-10-27 — the invoke beat and the answering glass: a spoken
+    sequence no longer fires its own verdict — at seven the Cast
+    rises in mantra mode too, and Enter (or the Cast) submits, so
+    a mis-spoken digit can still be unspoken first. And the pulse
+    shader learned touch: a click or tap lands in the ground as a
+    bloom and an outward ring at that point, card taps included
+    (the scene's cardTapped now carries the point).

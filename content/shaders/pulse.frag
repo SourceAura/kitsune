@@ -1,15 +1,20 @@
 #version 440
 // pulse.frag — energy in the glass
-// Filament veins sleep in the blurred ground. A surge sends a front of
-// light across them; now and then the whole field crackles. Sporadic by
-// design — the QML envelope decides when; the shader only draws.
+// Filament veins sleep in the blurred ground. A surge sends a front
+// of light across them; now and then the whole field crackles. And
+// the glass answers touch: a click lands as a ripple of light from
+// that point. Sporadic by design — the QML side decides when; the
+// shader only draws.
 //
 // Uniforms:
-//   u_time     — continuous seconds
-//   u_surge    — 0–1, surge envelope
-//   u_front    — surge front position in uv.x (travels -0.35 to 1.35)
-//   u_crackle  — 0–1, crackle flare envelope
-//   u_calm     — baseline filament strength (a whisper)
+//   u_time      — continuous seconds
+//   u_surge     — 0–1, surge envelope
+//   u_front     — surge front position in uv.x (travels -0.35 to 1.35)
+//   u_crackle   — 0–1, crackle flare envelope
+//   u_calm      — baseline filament strength (a whisper)
+//   u_click     — last touch point, in uv
+//   u_clickAge  — seconds since that touch
+//   u_aspect    — surface width / height, for round ripples
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;
@@ -22,6 +27,9 @@ layout(std140, binding = 0) uniform buf {
     float u_front;
     float u_crackle;
     float u_calm;
+    vec2 u_click;
+    float u_clickAge;
+    float u_aspect;
 };
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -49,6 +57,15 @@ void main() {
     float inten = u_calm + u_surge * front * 0.30 + u_crackle * 0.50;
     vec3 energy = ecol * vein * inten;
     energy += vec3(0.72, 0.62, 1.0) * u_crackle * 0.10 * (0.6 + 0.4 * noise(uv * 3.0 + u_time * 0.7));
+    // the touch: a bloom at the point, and a ring walking outward
+    float ct = u_clickAge;
+    if (ct >= 0.0 && ct < 2.5) {
+        vec2 dp = (uv - u_click) * vec2(u_aspect, 1.0);
+        float cd = length(dp);
+        float ring = exp(-pow((cd - ct * 0.45) * 7.0, 2.0)) * exp(-ct * 1.6);
+        float bloom = exp(-cd * 5.0) * exp(-ct * 3.0);
+        energy += ecol * (ring * 0.55 + bloom * 0.35) + vec3(0.9, 0.95, 1.0) * bloom * 0.12;
+    }
     float a = clamp(max(energy.r, max(energy.g, energy.b)), 0.0, 1.0);
     fragColor = vec4(energy, a * 0.92) * qt_Opacity;
 }

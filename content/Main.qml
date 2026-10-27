@@ -45,6 +45,14 @@ Rectangle {
     property real _pulseSurge: 0
     property real _pulseFront: -0.4
     property real _pulseCrackle: 0
+    property real _rippleX: 0.5
+    property real _rippleY: 0.5
+    property real _rippleStart: -100.0
+    function _rippleAt(px, py) {
+        root._rippleX = px / Math.max(1, root.width);
+        root._rippleY = py / Math.max(1, root.height);
+        root._rippleStart = root._pulseTime;
+    }
     property bool _failed: false
     property bool _leaving: false
 
@@ -162,6 +170,14 @@ Rectangle {
                              + " · spoken · " + root._gateEntry.length + " of 7");
             return;
         }
+        root._setWhisper("the sequence is complete · invoke the seal to pass");
+    }
+    function _gateSubmit() {
+        if (!root._gateActive) return;
+        if (root._gateEntry.length < 7) {
+            root._setWhisper("the mantra is sevenfold · speak it whole, then invoke");
+            return;
+        }
         if (root._tapped.join(",") === root._gateOrder.join(",")) {
             root._gatePassed = true;
             if (root._mantraPass.length > 0) {
@@ -195,6 +211,11 @@ Rectangle {
     }
     Keys.onPressed: function(event) {
         if (!root._gateActive) return;
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root._gateSubmit();
+            event.accepted = true;
+            return;
+        }
         if (event.key === Qt.Key_Backspace) {
             if (root._gateEntry.length > 0) {
                 root._gateEntry = root._gateEntry.slice(0, -1);
@@ -315,6 +336,13 @@ Rectangle {
         property real u_front: root._pulseFront
         property real u_crackle: root._pulseCrackle
         property real u_calm: 0.05
+        property var u_click: Qt.vector2d(root._rippleX, root._rippleY)
+        property real u_clickAge: root._pulseTime - root._rippleStart
+        property real u_aspect: root.width / Math.max(1, root.height)
+    }
+    MouseArea {
+        anchors.fill: parent
+        onPressed: function(mouse) { root._rippleAt(mouse.x, mouse.y); }
     }
     Timer {
         interval: 50; running: true; repeat: true
@@ -370,10 +398,14 @@ Rectangle {
         hasError:        root._failed
         isLoading:       root._checking
         isUnlocked:      root._leaving
-        readyToCast:     root._bound >= 7 && !root._checking && !root._leaving
+        readyToCast:     root._gateActive ? (root._gateEntry.length >= 7 && !root._checking)
+                                           : (root._bound >= 7 && !root._checking && !root._leaving)
 
-        onCastRequested: root.attemptLogin()
-        onCardTapped: function(foldId, position) { root._gateDigit(position); }
+        onCastRequested: root._gateActive ? root._gateSubmit() : root.attemptLogin()
+        onCardTapped: function(foldId, position, px, py) {
+            root._rippleAt(px, py);
+            root._gateDigit(position);
+        }
     }
 
     // ---- The login (astronaut's call, letter for letter) -----------------
@@ -439,6 +471,7 @@ Rectangle {
         x: 0; y: 0
         enabled: root._gateActive
         background: Item {}
+        onAccepted: root._gateSubmit()
         onTextChanged: {
             const t = text;
             if (t.length === 0) return;
