@@ -8,13 +8,14 @@ FloatingWindow {
     color: "#07070d"
     title: "kitsune-mantra"
 
-    MantraSetup {
+    Loader {
         anchors.fill: parent
-        confPath: {
+        source: "MantraSetup.qml"
+        onLoaded: {
             const e = Quickshell.env("KITSUNE_THEME_CONF");
-            return e && e.length > 0 ? e
+            item.confPath = e && e.length > 0 ? e
                 : Quickshell.env("HOME") + "/.local/share/qylock/themes/kitsune/theme.conf";
+            item.writerPath = (Quickshell.env("KITSUNE_MANTRA_DIR") || ".") + "/mantraconf.py";
         }
-        writerPath: (Quickshell.env("KITSUNE_MANTRA_DIR") || ".") + "/mantraconf.py"
     }
 }
