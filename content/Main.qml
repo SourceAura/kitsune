@@ -82,7 +82,7 @@ Rectangle {
         const raw = (typeof config !== "undefined" && config.MantraOrder) ? String(config.MantraOrder) : "";
         const list = raw.split(",").map(function(w) { return w.trim(); })
                         .filter(function(w) { return root._foldIds.indexOf(w) >= 0; });
-        return list.length === 7 ? list : root._foldIds;
+        return list.length === 7 && new Set(list).size === 7 ? list : root._foldIds;
     }
     property bool _gateOn: root._gateDefault
     property bool _gatePassed: !root._gateDefault
@@ -235,7 +235,7 @@ Rectangle {
             if (event.key === Qt.Key_Escape) { root._settingsOpen = false; event.accepted = true; return; }
             if (event.text === "g") { root._toggleGate(); event.accepted = true; return; }
             if (event.text === "-" || event.text === "+") {
-                root._gateMaxAttempts = Math.max(1, Math.min(5, root._gateMaxAttempts + (event.text === "+" ? 1 : -1)));
+                root._gateMaxAttempts = Math.max(1, Math.min(9, root._gateMaxAttempts + (event.text === "+" ? 1 : -1)));
                 event.accepted = true;
                 return;
             }
@@ -507,9 +507,12 @@ Rectangle {
             // A refused key stands the gate down; the switch is manual.
     Timer {
         id: failWhisper; interval: 150; repeat: false
-        onTriggered: root._setWhisper(root._refusedWasGate
-            ? "the binding refuses · the stored key was refused — your password, then"
-            : "the binding refuses · login failed")
+        onTriggered: {
+            root._setWhisper(root._refusedWasGate
+                ? "the binding refuses · the stored key was refused — your password, then"
+                : "the binding refuses · login failed");
+            root._refusedWasGate = false;
+        }
     }
 
     // ---- The gate's ear: a quiet field that only listens for digits ------
@@ -800,7 +803,7 @@ Rectangle {
                     font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                     font.pixelSize: 15
                     MouseArea { anchors.fill: parent; anchors.margins: -6; cursorShape: Qt.PointingHandCursor
-                                onClicked: root._gateMaxAttempts = Math.min(5, root._gateMaxAttempts + 1) }
+                                onClicked: root._gateMaxAttempts = Math.min(9, root._gateMaxAttempts + 1) }
                 }
             }
             Text {

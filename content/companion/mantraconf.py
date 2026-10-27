@@ -70,7 +70,7 @@ def public_state(path):
     return {
         "gate": old.get("MantraGate") == "true",
         "attempts": attempts,
-        "order": order if len(order) == 7 else CANON,
+        "order": order if len(order) == 7 and len(set(order)) == 7 else CANON,
         "keySet": bool(old.get("MantraPass", "")),
         "exists": bool(old),
     }
@@ -91,7 +91,7 @@ def main():
     order = [o for o in payload.get("order", []) if o in CANON]
     if len(order) != 7 or len(set(order)) != 7:
         order = [o for o in old.get("MantraOrder", "").split(",") if o in CANON]
-    if len(order) != 7:
+    if len(order) != 7 or len(set(order)) != 7:
         order = CANON
 
     action = payload.get("passAction", "keep")
