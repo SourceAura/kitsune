@@ -3,7 +3,9 @@
 The companion to the Kitsune lock face. It runs in your session
 and sets the mantra gate's standing choices — the gate itself,
 your order of the seven folds, the attempt limit, and the stored
-key — so nobody has to edit a config file by hand.
+key — so nobody has to edit a config file by hand. The gate
+it configures is a work in progress; the lock's basic login is
+finished and needs nothing here.
 
     qs -p ~/.local/share/qylock/themes/kitsune/companion/run
 

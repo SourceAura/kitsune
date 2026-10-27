@@ -141,3 +141,10 @@ alone and loads MantraSetup by absolute URL from
 Quickshell.configDir. Launch: qs -p <theme>/companion/run.
 Proven from a copy of the installed layout: the window
 renders whole and reads the standing settings.
+
+2026-10-27 — the gate is marked work in progress. By the
+captain's word the unlock is not yet what he wants: MantraGate
+stands off by default on his own seats, and the README, the
+shipped theme.conf, the companion's README, and the hint panel
+now say plainly that the gate is under construction. The basic
+login is finished and unaffected.

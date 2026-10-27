@@ -8,6 +8,12 @@ the same idiom).
 
 ## The mantra gate
 
+**Status: work in progress.** The mantra gate is still under
+construction. The basic login — Ase, the folds binding as you
+type, the password field, the seal — is finished and works
+with the gate off, which is how Kitsune ships. Turn the gate
+on only to explore it.
+
 Kitsune can stand a sequence gate in front of the password field. It
 ships **off**. Turn it on in `theme.conf`:
 

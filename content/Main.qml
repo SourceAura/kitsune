@@ -814,7 +814,7 @@ Rectangle {
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: "The gate deals the seven folds shuffled at every showing. Answer with the slot "
+                text: "Work in progress: the gate is still under construction — the password login beneath it is finished. The gate deals the seven folds shuffled at every showing. Answer with the slot "
                     + "numbers — keys 1 to 7, or tap the cards — in your order of the folds, then invoke "
                     + "the seal (Enter). A wrong sequence redeals; after the attempt limit the gate "
                     + "stands down to the password field and stays down until a human stands it again. "
