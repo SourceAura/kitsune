@@ -10,7 +10,7 @@ FloatingWindow {
 
     Loader {
         anchors.fill: parent
-        source: "MantraSetup.qml"
+        source: Qt.resolvedUrl("MantraSetup.qml")
         onLoaded: {
             const e = Quickshell.env("KITSUNE_THEME_CONF");
             item.confPath = e && e.length > 0 ? e
