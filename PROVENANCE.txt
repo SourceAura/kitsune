@@ -128,3 +128,16 @@ mode 600, public state back, never the key. The shipped
 theme.conf now documents MantraAttempts, and the hint panel
 names the companion; its keys (h, g, −/+, esc) work the panel
 from the keyboard. The gate's rules did not change.
+
+2026-10-27 — 2.0.0 audit pass. The companion is hardened:
+the writer refuses malformed input and leaves theme.conf
+untouched; a seal that goes unanswered is reported; the
+writer is found without environment help. The shell moved
+to companion/run/: quickshell registers its config
+directory as an import context, under which MantraSetup's
+relative scene import does not resolve, and Qt.resolvedUrl
+returns the blackhole scheme there — the shell now stands
+alone and loads MantraSetup by absolute URL from
+Quickshell.configDir. Launch: qs -p <theme>/companion/run.
+Proven from a copy of the installed layout: the window
+renders whole and reads the standing settings.
