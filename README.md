@@ -42,6 +42,29 @@ see the order you answered in, just like watching a password typed.
 The gate's value is that it is yours — a ritual, and friction for
 casual hands. It claims nothing more.
 
+## Setting your mantra
+
+You do not need to edit theme.conf by hand. The package ships a
+companion, **kitsune-mantra**, which runs in your session:
+
+    companion/kitsune-mantra
+
+It deals the same fan. Speak your order by tapping the cards or
+typing their numbers — the cards are numbered because both ways
+are first-class: tapping is not an option for everyone, and some
+people simply never want to leave the keyboard. The window
+prints its own keyboard map. **Try your mantra** deals a
+practice fan, shuffled like the door's, and tells you whether
+she would open.
+
+Sealing writes theme.conf through a small writer. Your password
+crosses to it on standard input only — never an argument, never
+shown back — and the file lands at mode 600. The stored-key
+warning applies exactly: it is your password in plain text, in
+a file only you can read. Leave it out and a right sequence
+simply opens the password field. No setup is ever required to
+log in.
+
 ## The ground
 
 Behind her is your own desktop, photographed at the moment of

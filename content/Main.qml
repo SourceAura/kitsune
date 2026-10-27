@@ -226,6 +226,20 @@ Rectangle {
         }
     }
     Keys.onPressed: function(event) {
+        if (event.text === "h") {
+            root._settingsOpen = !root._settingsOpen;
+            event.accepted = true;
+            return;
+        }
+        if (root._settingsOpen) {
+            if (event.key === Qt.Key_Escape) { root._settingsOpen = false; event.accepted = true; return; }
+            if (event.text === "g") { root._toggleGate(); event.accepted = true; return; }
+            if (event.text === "-" || event.text === "+") {
+                root._gateMaxAttempts = Math.max(1, Math.min(5, root._gateMaxAttempts + (event.text === "+" ? 1 : -1)));
+                event.accepted = true;
+                return;
+            }
+        }
         if (!root._gateActive) return;
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             root._gateSubmit();
@@ -490,9 +504,7 @@ Rectangle {
         }
     }
     Timer { id: resetError; interval: 2000; repeat: false; onTriggered: root._failed = false }
-    // (A refused stored key no longer re-arms the gate: it stands
-    // down to the field in onLoginFailed, and a human stands it
-    // again — the toggle is manual.)
+            // A refused key stands the gate down; the switch is manual.
     Timer {
         id: failWhisper; interval: 150; repeat: false
         onTriggered: root._setWhisper(root._refusedWasGate
@@ -809,7 +821,9 @@ Rectangle {
                     + "The switch is manual. The gate is a sequence in front of PAM: what PAM checks is "
                     + "a password — typed here, or the stored key a right sequence speaks. Standing "
                     + "choices live in theme.conf: MantraGate, MantraOrder, MantraAttempts, MantraPass. "
-                    + "Changes in this panel last for this showing."
+                    + "Changes in this panel last for this showing. kitsune-mantra, the companion, "
+                    + "sets the standing choices from your session. Keys: h this hint, g the gate, "
+                    + "\u2212 and + the attempts, esc closes."
                 color: Qt.alpha(root.palText, 0.75)
                 font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                 font.pixelSize: 11

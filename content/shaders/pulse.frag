@@ -1,22 +1,10 @@
 #version 440
-// pulse.frag — energy in the glass
-// Filament veins sleep in the blurred ground. A surge sends a front
-// of light across them; now and then the whole field crackles. And
-// the glass answers touch as water does: the ground itself bends
-// along the wavefront, fine crests carry a spectral rim, and each
-// ring keeps a lit side and a shaded side. Sporadic by design —
-// the QML side decides when; the shader only draws.
-//
-// Uniforms:
-//   u_time      — continuous seconds
-//   u_surge     — 0–1, surge envelope
-//   u_front     — surge front position in uv.x (travels -0.35 to 1.35)
-//   u_crackle   — 0–1, crackle flare envelope
-//   u_calm      — baseline filament strength (a whisper)
-//   u_click     — last touch point, in uv
-//   u_clickAge  — seconds since that touch
-//   u_aspect    — surface width / height, for round ripples
-//   u_ground    — the ground itself, sampled and bent by the water
+// pulse — energy in the glass over the veiled ground.
+// Filaments breathe; a surge front sweeps; crackle flares.
+// The water shares this field. Uniforms: u_time seconds,
+// u_surge / u_crackle envelopes, u_front surge position,
+// u_src the ground, u_ripples[3] (xy origin, z birth,
+// w strength), u_calm filament level, u_res resolution.
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;

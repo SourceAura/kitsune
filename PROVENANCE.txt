@@ -115,3 +115,16 @@ The port's own hand, kept as small as the Fūin port's:
     bloom on hover — a soft shadow off the word itself, easing
     in and out. The mantra word is part of its switch now:
     hovering or clicking the word works the toggle.
+
+## 2026-10-27 — 2.0.0: the companion
+
+kitsune-mantra joins the package (content/companion/): a
+session-side window reusing Ase's own scene, where the order is
+spoken by tapping the cards or typing their numbers, with a
+practice mode that deals shuffled fans like the door. Its
+writer (mantraconf.py) is the only thing that writes
+theme.conf — one JSON line in on stdin, an atomic write out at
+mode 600, public state back, never the key. The shipped
+theme.conf now documents MantraAttempts, and the hint panel
+names the companion; its keys (h, g, −/+, esc) work the panel
+from the keyboard. The gate's rules did not change.
