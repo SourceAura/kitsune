@@ -21,7 +21,7 @@ each card, 1–7 left to right) in *your* order of the folds: type the
 digits, or tap the cards. The folds are named truth, power, wisdom,
 judgment, life, love, discipline — `MantraOrder` is where you put
 them in the order that means something to you. A wrong sequence
-redeals. The switch at the bottom right of the face lifts the gate
+redeals. Three wrong sequences (MantraAttempts) stand the gate down to the password field for the rest of the showing; only the manual switch stands it again — nothing re-arms it on its own. A settings button at the bottom left of the face opens a panel with the switch, the attempt limit for the showing, whether a key is set, and this same account of the gate in plain words. The switch at the bottom right of the face lifts the gate
 for that showing only; `theme.conf` is the standing setting.
 
 A right sequence opens the password field. If you also set
