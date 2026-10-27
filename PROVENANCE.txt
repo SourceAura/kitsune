@@ -60,3 +60,25 @@ The port's own hand, kept as small as the Fūin port's:
     instead of naming the theme's author for every user.
   * The sign-in column sits at the foot of the screen so the
     invocation whisper stays clear at the supported 720p size.
+  * 2026-10-27 — the ground becomes the desktop itself: a third
+    layer reads /run/user/<uid>/fuin-desktop.png (cache off), the
+    screenshot tools/fuin-lock takes on the way into the lock,
+    held to the same blur and dimming; the two wallpaper layers
+    were lifted to match (blur 0.8, brightness −0.10, scrim
+    0.30), so capture-less showings — the greeter, an idle lock —
+    stand on the same veil. The capture lives only in the tmpfs.
+  * 2026-10-27 — the pulse: content/shaders/pulse.frag, a filament
+    field over the ground at a whisper, with a sporadic surge
+    front and a rare crackle flare, driven from Main.qml. Baked
+    with the qt6 shader set, like the rest of her shaders.
+  * 2026-10-27 — the name plate at the foot of the face
+    ("0XSRCAURA") is removed. The face carries no signature now.
+  * 2026-10-27 — the mantra gate, restored to the design she was
+    built for: theme.conf keys MantraGate / MantraOrder deal the
+    folds shuffled at every showing; digit keys or card taps
+    answer slot numbers in the reader's own order; a wrong
+    sequence redeals; a right one opens the password field — or,
+    when MantraPass is set on a private seat, submits the login
+    itself. The switch at the bottom right lifts the gate for one
+    showing. Shipped off; the public theme.conf carries no one's
+    order and no key.

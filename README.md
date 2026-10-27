@@ -6,27 +6,79 @@ Ase, the seven-tailed kitsune, and her seven tarot folds — a lockscreen
 and greeter theme for SDDM (and for Ryoku's session lock, which speaks
 the same idiom).
 
-Type your password and the folds bind one by one — THE EYE · TRUTH,
-THE PHANTOM · POWER, THE BLADE · WISDOM, THE SAGE · JUDGMENT,
-THE SHROUD · LIFE, THE FORGE · LOVE, THE MIRROR · DISCIPLINE — each
-whispered as it lands. At seven the sequence is complete and the
-Cast rises: INVOKE THE SEAL. A wrong key hurts her and scatters the
-cards. The true key transforms her, and the seal opens.
+## The mantra gate
+
+Kitsune can stand a sequence gate in front of the password field. It
+ships **off**. Turn it on in `theme.conf`:
+
+    MantraGate=true
+    MantraOrder=truth,power,wisdom,judgment,life,love,discipline
+
+With the gate on, the seven folds are dealt **shuffled at every
+showing** — every lock, every login screen, and again after every
+wrong answer. You answer with the slot numbers (the small numeral on
+each card, 1–7 left to right) in *your* order of the folds: type the
+digits, or tap the cards. The folds are named truth, power, wisdom,
+judgment, life, love, discipline — `MantraOrder` is where you put
+them in the order that means something to you. A wrong sequence
+redeals. The switch at the bottom right of the face lifts the gate
+for that showing only; `theme.conf` is the standing setting.
+
+A right sequence opens the password field. If you also set
+
+    MantraPass=<your password>
+
+a right sequence skips the field and logs in directly. Read that
+again before you set it: **MantraPass is your password, in plain
+text, in a config file.** Anyone who can read the file has the
+password. It exists for a seat whose `theme.conf` nobody else can
+read (chmod 600, your own machine) — and it is empty in the shipped
+theme, on purpose.
+
+Straight talk about what the gate is: a personal sequence in front
+of your password, not a replacement for it. PAM still checks the
+credential, exactly as before. Anyone watching one full unlock can
+see the order you answered in, just like watching a password typed.
+The gate's value is that it is yours — a ritual, and friction for
+casual hands. It claims nothing more.
+
+## The ground
+
+Behind her is your own desktop, photographed at the moment of
+locking and blurred past reading — shapes and light, nothing
+legible. The screenshot is taken locally by the `tools/fuin-lock`
+wrapper, kept in the runtime tmpfs (`/run/user/<uid>/fuin-desktop.png`),
+never sent anywhere, overwritten at every lock, gone at logout.
+Locks that have no fresh capture — the greeter, an idle lock — fall
+back to the wallpaper under the same blur and dimming.
+
+Faint energy moves in that ground: filaments at rest, a slow surge
+of light now and then, a rare brighter crackle. Decoration, nothing
+more — a shader over the blur, driven by a sporadic timer.
+
+## The password ceremony
+
+With the gate off — or once it opens — the face works as she always
+has: type your password and the folds bind one by one, each
+whispered as it lands. At seven the Cast rises: INVOKE THE SEAL. A
+wrong password hurts her and scatters the cards; the right one
+transforms her, and the seal opens.
 
 Built by 0xSrcAura in 2026 for Jurai shell, carried to RyoStore
-whole. Her scene, her shaders, her words — nothing redrawn.
-See PROVENANCE.txt for exactly what the port touched (a resting
-orchestrator singleton, a module file, the name plate) and what it
-did not.
+whole. See PROVENANCE.txt for what the port touched and what it did
+not.
 
 Install (RyoStore): the `kitsune` lockscreen. On Ryoku she seats
 herself for both the session lock and — once SDDM's Current names
-her — the login door.
+her — the login door. For the desktop capture at the session lock,
+bind your lock key to `tools/fuin-lock` (on Ryoku it screenshots,
+then calls `ryoku-shell lock`; elsewhere, any screenshot tool plus
+your own lock command in the same two lines).
 
 ## Her sister door
 
 Kitsune is one of a pair. Her sister is [Fūin](https://github.com/SourceAura/fuin)
-— Jurai's Threshold, the lock face of the Jurai shell: the wallpaper
-blurred behind a drawn veil, a password field breathing prism light.
-Kitsune greets; Fūin guards. Two wards of the same house, speaking the
-same gate idiom.
+— Jurai's Threshold: the wallpaper blurred behind a drawn veil, a
+password field breathing prism light. Two wards of the same house,
+speaking the same gate idiom: the face never learns who checks the
+password.
