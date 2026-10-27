@@ -100,3 +100,12 @@ The port's own hand, kept as small as the Fūin port's:
     went fine (a bright core at a third the old width), each
     ring carries a lit side and a shaded side, and a capillary
     shimmer rides inside the train.
+  * 2026-10-27 — the gate's discipline, and a face that explains
+    itself: wrong sequences now count — at the limit (MantraAttempts,
+    3 standing) the gate stands down to the password field for the
+    rest of the showing, and nothing stands it again but the manual
+    switch. A refused stored key stands it down too; the old
+    auto-rearm is gone. A settings button (bottom left) opens a
+    panel: the gate switch, the attempt limit for the showing,
+    whether a key is set, and a plain account of what the gate
+    does and where its standing choices live.
