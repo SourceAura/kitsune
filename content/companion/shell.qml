@@ -15,7 +15,9 @@ FloatingWindow {
             const e = Quickshell.env("KITSUNE_THEME_CONF");
             item.confPath = e && e.length > 0 ? e
                 : Quickshell.env("HOME") + "/.local/share/qylock/themes/kitsune/theme.conf";
-            item.writerPath = (Quickshell.env("KITSUNE_MANTRA_DIR") || ".") + "/mantraconf.py";
+            const dir = Quickshell.env("KITSUNE_MANTRA_DIR")
+                || Qt.resolvedUrl(".").toString().replace("file://", "");
+            item.writerPath = dir + "/mantraconf.py";
         }
     }
 }

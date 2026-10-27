@@ -81,7 +81,11 @@ def main():
     if len(sys.argv) > 2 and sys.argv[2] == "read":
         print(json.dumps(public_state(path)))
         return
-    payload = json.loads(sys.stdin.readline())
+    try:
+        payload = json.loads(sys.stdin.readline())
+        int(payload.get("attempts", 3))
+    except (ValueError, TypeError, AttributeError):
+        sys.exit(2)
     old, unknown = read_old(path)
 
     order = [o for o in payload.get("order", []) if o in CANON]

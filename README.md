@@ -47,7 +47,7 @@ casual hands. It claims nothing more.
 You do not need to edit theme.conf by hand. The package ships a
 companion, **kitsune-mantra**, which runs in your session:
 
-    companion/kitsune-mantra
+    qs -p ~/.local/share/qylock/themes/kitsune/companion
 
 It deals the same fan. Speak your order by tapping the cards or
 typing their numbers — the cards are numbered because both ways

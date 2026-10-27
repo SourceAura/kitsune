@@ -5,7 +5,10 @@ and sets the mantra gate's standing choices — the gate itself,
 your order of the seven folds, the attempt limit, and the stored
 key — so nobody has to edit a config file by hand.
 
-    kitsune-mantra
+    qs -p ~/.local/share/qylock/themes/kitsune/companion
+
+(From a git checkout, ./kitsune-mantra in this directory does
+the same.)
 
 Speak your order by tapping the cards or typing their numbers;
 both are the same act, as at the door. The window prints its own

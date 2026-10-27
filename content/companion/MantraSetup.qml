@@ -6,7 +6,6 @@
  */
 import QtQuick
 import QtQuick.Controls
-import Quickshell
 import Quickshell.Io
 import "../gotchi"
 
@@ -142,6 +141,13 @@ Item {
         root._status = "sealing…";
         writer.command = ["python3", root.writerPath, root.confPath];
         writer.running = true;
+        sealWatch.restart();
+    }
+    Timer {
+        id: sealWatch
+        interval: 4000
+        repeat: false
+        onTriggered: if (root._status === "sealing…") root._status = "the writer did not answer — nothing was sealed";
     }
     Process {
         id: writer
