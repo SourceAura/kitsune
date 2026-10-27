@@ -54,7 +54,7 @@ manifest = {
     "schema": 1,
     "id": "kitsune",
     "category": "lockscreens",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "destination": "qylock/themes/kitsune",
     "files": files,
 }
