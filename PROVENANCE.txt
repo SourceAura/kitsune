@@ -93,3 +93,10 @@ The port's own hand, kept as small as the Fūin port's:
     decelerating front with two trailing crests, a spectral
     split at each rim, and a bright core line — prismatic water,
     still threaded through the filament field.
+  * 2026-10-27 — the water made true: the pulse now samples the
+    ground (a ShaderEffectSource over the ground stack, the
+    original still standing beneath as the fallback) and bends
+    it along the wavefront — refraction, not just light. Crests
+    went fine (a bright core at a third the old width), each
+    ring carries a lit side and a shaded side, and a capillary
+    shimmer rides inside the train.

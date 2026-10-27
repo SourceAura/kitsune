@@ -272,6 +272,9 @@ Rectangle {
     // In the shell the theme-local copy stood raw beneath the manager's
     // blurred still; standing alone it would have shown the picture
     // plain at the door. Same blur, same dimming, same easing as hers.
+    Item {
+        id: groundStack
+        anchors.fill: parent
     Image {
         anchors.fill: parent
         source: "Backgrounds/wallpaper.jpg"
@@ -326,6 +329,14 @@ Rectangle {
         anchors.fill: parent
         color: Qt.alpha(root.palBackground, 0.30)
     }
+    }
+    ShaderEffectSource {
+        id: groundSource
+        sourceItem: groundStack
+        hideSource: false
+        live: true
+        visible: false
+    }
 
     // ---- The pulse (energy in the glass — calm, surges, rare crackle) ---
     ShaderEffect {
@@ -339,6 +350,7 @@ Rectangle {
         property var u_click: Qt.vector2d(root._rippleX, root._rippleY)
         property real u_clickAge: root._pulseTime - root._rippleStart
         property real u_aspect: root.width / Math.max(1, root.height)
+        property var u_ground: groundSource
     }
     MouseArea {
         anchors.fill: parent
