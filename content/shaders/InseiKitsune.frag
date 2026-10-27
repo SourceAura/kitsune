@@ -1,15 +1,10 @@
 #version 440
-// AseKitsune.frag — Digital Kitsune Companion (v2)
-//
-// Ase manifested as a 7-tailed fox spirit.
-// Each tail tip is tinted with its corresponding fold color:
-//   tail 0 → truth      #4ade80  (ghost green)
-//   tail 1 → power      #f43f5e  (crimson)
-//   tail 2 → wisdom     #00B4D8  (water blue)
-//   tail 3 → judgment   #9B1FA0  (violet)
-//   tail 4 → life       #818cf8  (indigo)
-//   tail 5 → love       #f59e0b  (amber)
-//   tail 6 → discipline #6366f1  (purple)
+
+// InseiKitsune.frag: Ase, a seven-tailed fox spirit, as an SDF shader.
+// Each tail tip is tinted with its fold colour:
+//   tail 0 truth #4ade80, tail 1 power #f43f5e, tail 2 wisdom #00B4D8,
+//   tail 3 judgment #9B1FA0, tail 4 life #818cf8, tail 5 love #f59e0b,
+//   tail 6 discipline #6366f1
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;
@@ -78,7 +73,6 @@ vec3 tailColor(int i) {
 void main() {
     vec2 uv  = qt_TexCoord0;
     float asp = ubuf.w / ubuf.h;
-    // Flip Y so positive Y = up (head above body, tails below)
     vec2 p   = (uv - 0.5) * vec2(asp, -1.0);
     float t  = ubuf.time;
 
@@ -86,18 +80,14 @@ void main() {
     p.y += sin(t * 0.5) * 0.03;
     p.x += sin(t * 0.8) * 0.05;
 
-    // Body sits below center — capsule from -0.1 to +0.1 in body-local space
-    // Body top in p-space: p.y - 0.05 + 0.1 = p.y + 0.05
     vec2 bodyPos = p + vec2(0.0, -0.05);
     float body   = sdCapsule(bodyPos, vec2(0.0,-0.1), vec2(0.0,0.1), 0.08);
 
-    // Head at the top end of the body — triangle flipped to point upward
     vec2 headPos = p + vec2(0.0, -0.23);
     headPos.y *= 1.2;
-    vec2 headFlipped = vec2(headPos.x, -headPos.y);  // flip Y to point triangle upward
+    vec2 headFlipped = vec2(headPos.x, -headPos.y);
     float head   = sdEquilateralTriangle(headFlipped, 0.08);
 
-    // Ears point upward (+Y) from the top of the head
     vec2 earL = headPos - vec2(-0.05, 0.06); earL *= rot( 0.4);
     vec2 earR = headPos - vec2( 0.05, 0.06); earR *= rot(-0.4);
 
@@ -110,7 +100,6 @@ void main() {
     float tails         = 100.0;
     vec3  tailColorAccum = vec3(0.0);
     float tailWeightSum  = 0.0;
-    // Guard: always 7 until companion system is active
     int   maxTails       = 7;
 
     for (int i = 0; i < 9; i++) {
@@ -119,23 +108,18 @@ void main() {
         float fi    = float(i);
         float angle = (fi / max(float(maxTails - 1), 1.0) - 0.5) * 3.2;
         float sway  = sin(t * 1.5 + fi * 0.7) * 0.12;
-        // tailP originates from the body's bottom tip
         vec2 tailOrigin = p + vec2(0.0, 0.08);
         vec2 tailP  = tailOrigin * rot(angle + sway);
         tailP.x    += sin(tailP.y * 8.0 - t * 4.0) * 0.04 * (tailP.y + 0.1);
 
-        // Capsule grows in -Y direction (downward away from body)
         float tailSDF   = sdCapsule(tailP, vec2(0.0, 0.0), vec2(0.0, -0.38),
                                     0.028 * (1.1 + tailP.y * 2.2));
-        // tipT: 1.0 at the tip (most negative Y), 0.0 at root
         float tipT      = clamp((-tailP.y + 0.05) / 0.38, 0.0, 1.0);
         float proximity = exp(-max(tailSDF, 0.0) * 40.0);
         tailColorAccum += tailColor(i) * tipT * proximity;
         tailWeightSum  += proximity;
         tails = opSmoothUnion(tails, tailSDF, 0.015);
     }
-
-    // ── Layered compositing: tails → body → head (front to back = head on top) ──
 
     vec3 accentColor = vec3(ubuf.fold_r, ubuf.fold_g, ubuf.fold_b);
     float furNoise   = noise(p * 8.0 + t * 0.5);
@@ -145,49 +129,40 @@ void main() {
     vec3 resolvedTailColor = tailWeightSum > 0.001
         ? tailColorAccum / tailWeightSum : accentColor;
 
-    // Layer 0 — tails (deepest, behind everything)
     float tailMask     = smoothstep(0.01, -0.01, tails);
     float tipInfluence = clamp(tailWeightSum * 1.4, 0.0, 1.0) * tailMask;
     vec3  tailFur      = mix(furBase, resolvedTailColor, tipInfluence * 0.85);
     float tailGlow     = exp(-tails * 8.0) * tipInfluence;
     vec3  tailLayer    = tailFur * tailMask + resolvedTailColor * tailGlow * 2.0;
 
-    // Layer 1 — body (covers tail roots)
     float bodyMask  = smoothstep(0.01, -0.01, body);
     float bodyGlow  = exp(-body * 15.0);
     vec3  bodyLayer = furBase * bodyMask + accentColor * bodyGlow * 0.8;
 
-    // Layer 2 — head (on top of body)
     float headMask  = smoothstep(0.01, -0.01, head);
-    // Slightly lighter fur on the face
     vec3  faceFur   = mix(furBase, vec3(0.08, 0.18, 0.28), 0.3 + furNoise * 0.2);
     float headGlow  = exp(-head * 15.0);
     vec3  headLayer = faceFur * headMask + accentColor * headGlow * 0.6;
 
-    // Layer 3 — ears (on top of head)
     float earLMask = smoothstep(0.01, -0.01, sdEquilateralTriangle(vec2(earL.x, -earL.y), 0.04));
     float earRMask = smoothstep(0.01, -0.01, sdEquilateralTriangle(vec2(earR.x, -earR.y), 0.04));
     float earMask  = clamp(earLMask + earRMask, 0.0, 1.0);
     vec3  earLayer = furBase * earMask;
 
-    // Composite back-to-front: each layer paints over the previous using its mask
     vec3 finalColor = vec3(0.0);
     finalColor = mix(finalColor, tailLayer,  tailMask);
     finalColor = mix(finalColor, bodyLayer,  bodyMask);
     finalColor = mix(finalColor, headLayer,  headMask);
     finalColor = mix(finalColor, earLayer,   earMask);
 
-    // Outer glow around the whole form
     float kitsuneFull = opSmoothUnion(kitsune, tails, 0.03);
     float outerGlow   = exp(-kitsuneFull * 5.0) * 0.3;
     finalColor += accentColor * outerGlow * 0.5;
 
-    // Eye — glowing white dot, drawn last so it's always on top
     float eye = length(headPos - vec2(0.0, 0.0)) - 0.015 * (1.0 - ubuf.mood_sleep * 0.9);
     finalColor = mix(finalColor, vec3(1.0),
                      smoothstep(0.01, 0.0, eye) * (0.8 + 0.2 * sin(t * 10.0)));
 
-    // Alpha: union of all layers
     float totalSDF  = opSmoothUnion(kitsuneFull, tails, 0.03);
     float bodyAlpha = smoothstep(0.012, -0.008, totalSDF);
     float haloAlpha = exp(-max(totalSDF, 0.0) * 22.0) * 0.9;

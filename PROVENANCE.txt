@@ -1,150 +1,96 @@
-KITSUNE — provenance
+Kitsune: provenance and change record
 
-The face is 0xSrcAura's own work, built 2026-10-21 for Jurai shell:
-Ase, the seven-tailed kitsune, and her seven tarot folds — his lock
-and login composition, first raised on his own machines, preview-
-proven the night it was built (typing binds the folds one by one;
-at seven the Cast rises; a refusal hurts her and scatters the
-cards; the true key transforms her and opens the seal).
+Kitsune is a lockscreen and greeter theme for SDDM and for
+Ryoku's session lock. The face is the author's own work,
+built 2026-10-21 for his desktop shell: Ase, the
+seven-tailed kitsune, and her seven tarot folds. Typing
+binds the folds one by one; at seven the Cast rises; a wrong
+password scatters the cards; the right one opens the seal.
 
-Two roots were written then, and both are preserved in this repo:
+Two roots from the original build are preserved:
 
-  content/Main.qml   — the greeter root, seated over SDDM's own
-                       machinery (and, through Ryoku's SddmShim,
-                       over the session lock as well). Unmodified.
-  faces/lock/Main.qml — the lock-face root, driven by the shell's
-                       threshold `gate` contract. Kept as the
-                       record of the original seat; not installed.
+  content/Main.qml: the shipped face. It serves the greeter
+  over SDDM and, through Ryoku's SddmShim, the session lock.
+  faces/lock/Main.qml: the original lock root, driven by the
+  shell's gate contract. Kept as a record; not installed.
 
-Her scene (content/gotchi/, the Insei* files and their qmldir),
-her shaders (content/shaders/, .frag sources beside the compiled
-.qsb), and her palette-and-accents singleton
-(content/tw/TransparentWorld.qml) come from the Jurai shell tree
-(apsara/mandara/soul/), with the small standalone-port changes
-listed below.
+The scene (content/gotchi/), the shaders (content/shaders/,
+.frag sources beside the compiled .qsb), and the design
+tokens (content/tw/) come from the author's shell tree.
+Port changes are listed below; the scene files themselves
+are unmodified apart from two numbers in InseiScene
+(the card fan rides 44 units lower, and the hint line is
+lifted clear of the centre card).
 
-The port's own hand, kept as small as the Fūin port's:
+Port notes:
 
-  * content/tw/ArOrchestrator.qml — a resting singleton under the
-    real one's name. In the shell he is the AR stage's living
-    state; the one scene seat that reads him (InseiHub) is never
-    raised at the door, so his shape stands here at rest and the
-    scene files stay untouched.
-  * content/tw/qmldir — declares the two singletons; a greeter
-    registers singletons only when their folder stands as a module.
-  * content/theme.conf + metadata.desktop — the store/greeter
-    dress: the one config key her greeter reads
-    (AllowUppercaseLettersInUsernames=false, her original rule)
-    and her name plate.
-  * Her ground: the greeter still looks for a theme-local
-    Backgrounds/wallpaper.jpg under a manager-published still at
-    /var/lib/valence-greeter/wallpaper.jpg. Neither is bundled —
-    where neither exists she stands on the veiled dark, exactly
-    as the sealed resting state was drawn.
-  * The ground's veil (v1.0.1, the captain's word the day she
-    landed: the current wallpaper shows through the lock, blurred
-    for privacy): the theme-local layer now wears the same
-    MultiEffect blur and dimming as the manager layer. In the
-    shell it stood raw beneath the blurred still; standing alone
-    in a store theme it would have shown the picture plain at
-    the door. On Ryoku her Backgrounds seat is a symlink to the
-    current wallpaper, re-struck by tools/sync-local.sh after
-    every install.
-  * v1.0.2, the same day, also his art direction: the card fan
-    rides 44 units lower in InseiScene (her arc centre), nested
-    closer over Ase's head, and the hint line above the arc —
-    "read the sigils · invoke your sequence", half-eaten by the
-    centre card as built — is lifted clear so it reads whole.
-    The v1.0.2 submission changed those two numbers.
-  * The success whisper welcomes the account entered in the greeter
-    instead of naming the theme's author for every user.
-  * The sign-in column sits at the foot of the screen so the
-    invocation whisper stays clear at the supported 720p size.
-  * 2026-10-27 — the ground becomes the desktop itself: a third
-    layer reads /run/user/<uid>/fuin-desktop.png (cache off), the
-    screenshot tools/fuin-lock takes on the way into the lock,
-    held to the same blur and dimming; the two wallpaper layers
-    were lifted to match (blur 0.8, brightness −0.10, scrim
-    0.30), so capture-less showings — the greeter, an idle lock —
-    stand on the same veil. The capture lives only in the tmpfs.
-  * 2026-10-27 — the pulse: content/shaders/pulse.frag, a filament
-    field over the ground at a whisper, with a sporadic surge
-    front and a rare crackle flare, driven from Main.qml. Baked
-    with the qt6 shader set, like the rest of her shaders.
-  * 2026-10-27 — the name plate at the foot of the face
-    ("0XSRCAURA") is removed. The face carries no signature now.
-  * 2026-10-27 — the mantra gate, restored to the design she was
-    built for: theme.conf keys MantraGate / MantraOrder deal the
-    folds shuffled at every showing; digit keys or card taps
-    answer slot numbers in the reader's own order; a wrong
-    sequence redeals; a right one opens the password field — or,
-    when MantraPass is set on a private seat, submits the login
-    itself. The switch at the bottom right lifts the gate for one
-    showing. Shipped off; the public theme.conf carries no one's
-    order and no key.
-  * 2026-10-27 — the invoke beat and the answering glass: a spoken
-    sequence no longer fires its own verdict — at seven the Cast
-    rises in mantra mode too, and Enter (or the Cast) submits, so
-    a mis-spoken digit can still be unspoken first. And the pulse
-    shader learned touch: a click or tap lands in the ground as a
-    bloom and an outward ring at that point, card taps included
-    (the scene's cardTapped now carries the point).
-  * 2026-10-27 — the touch learned water: the ripple is now a
-    decelerating front with two trailing crests, a spectral
-    split at each rim, and a bright core line — prismatic water,
-    still threaded through the filament field.
-  * 2026-10-27 — the water made true: the pulse now samples the
-    ground (a ShaderEffectSource over the ground stack, the
-    original still standing beneath as the fallback) and bends
-    it along the wavefront — refraction, not just light. Crests
-    went fine (a bright core at a third the old width), each
-    ring carries a lit side and a shaded side, and a capillary
-    shimmer rides inside the train.
-  * 2026-10-27 — the gate's discipline, and a face that explains
-    itself: wrong sequences now count — at the limit (MantraAttempts,
-    3 standing) the gate stands down to the password field for the
-    rest of the showing, and nothing stands it again but the manual
-    switch. A refused stored key stands it down too; the old
-    auto-rearm is gone. A settings button (bottom left) opens a
-    panel: the gate switch, the attempt limit for the showing,
-    whether a key is set, and a plain account of what the gate
-    does and where its standing choices live.
-  * 2026-10-27 — the panel is a hint now: the bottom-left word
-    reads "hint", the panel is titled "MANTRA GATE — THE HINT",
-    and the four corner words (hint, mantra, reboot, power off)
-    bloom on hover — a soft shadow off the word itself, easing
-    in and out. The mantra word is part of its switch now:
-    hovering or clicking the word works the toggle.
+- content/tw/ArOrchestrator.qml is a resting singleton under
+  the shell singleton's name: a lock face has no daemon, so
+  the properties the scene can name stand here with quiet
+  values and the scene runs in any host.
+- content/tw/qmldir declares the two singletons; a greeter
+  registers singletons only when their folder is a module.
+- The ground has three layers, bottom to top: the theme
+  wallpaper (Backgrounds/wallpaper.jpg), the greeter
+  manager's still (/var/lib/valence-greeter/wallpaper.jpg),
+  and the session capture (/run/user/<uid>/fuin-desktop.png,
+  taken by tools/fuin-lock on the way into the lock, held
+  only in the tmpfs). All three wear the same veil:
+  blur 0.8, brightness -0.10, scrim 0.30. On Ryoku the
+  Backgrounds seat is a symlink to the current wallpaper,
+  re-struck by tools/sync-local.sh after every install.
+- The success whisper welcomes the account entered at the
+  greeter. The sign-in column sits at the foot of the screen
+  so the invocation whisper stays clear at 720p. The name
+  plate at the foot of the face was removed 2026-10-27.
 
-## 2026-10-27 — 2.0.0: the companion
+Changes, newest last:
 
-kitsune-mantra joins the package (content/companion/): a
-session-side window reusing Ase's own scene, where the order is
-spoken by tapping the cards or typing their numbers, with a
-practice mode that deals shuffled fans like the door. Its
-writer (mantraconf.py) is the only thing that writes
-theme.conf — one JSON line in on stdin, an atomic write out at
-mode 600, public state back, never the key. The shipped
-theme.conf now documents MantraAttempts, and the hint panel
-names the companion; its keys (h, g, −/+, esc) work the panel
-from the keyboard. The gate's rules did not change.
-
-2026-10-27 — 2.0.0 audit pass. The companion is hardened:
-the writer refuses malformed input and leaves theme.conf
-untouched; a seal that goes unanswered is reported; the
-writer is found without environment help. The shell moved
-to companion/run/: quickshell registers its config
-directory as an import context, under which MantraSetup's
-relative scene import does not resolve, and Qt.resolvedUrl
-returns the blackhole scheme there — the shell now stands
-alone and loads MantraSetup by absolute URL from
-Quickshell.configDir. Launch: qs -p <theme>/companion/run.
-Proven from a copy of the installed layout: the window
-renders whole and reads the standing settings.
-
-2026-10-27 — the gate is marked work in progress. By the
-captain's word the unlock is not yet what he wants: MantraGate
-stands off by default on his own seats, and the README, the
-shipped theme.conf, the companion's README, and the hint panel
-now say plainly that the gate is under construction. The basic
-login is finished and unaffected.
+- 1.0.1 (2026-10-25): the theme wallpaper layer wears the
+  same blur and dimming as the manager layer.
+- 1.0.2 (2026-10-25): card fan lowered 44 units in
+  InseiScene; hint line lifted clear of the centre card.
+- 2026-10-27: third ground layer (the session capture)
+  added; all layers lifted to blur 0.8, brightness -0.10,
+  scrim 0.30.
+- 2026-10-27: pulse.frag added: a filament field over the
+  ground with a sporadic surge front and a rare crackle
+  flare. Touch lands as a ripple in the field; the ripple
+  refracts the ground along its wavefront.
+- 2026-10-27: the mantra gate restored. theme.conf keys
+  MantraGate and MantraOrder deal the folds shuffled at
+  every showing; digits or taps answer slot numbers in the
+  reader's own order; a wrong sequence redeals; a right one
+  opens the password field, or submits the login itself
+  when MantraPass is set on a private seat. At seven the
+  Cast rises in mantra mode too, and Enter submits, so a
+  mis-spoken digit can be unspoken first. Wrong sequences
+  count: at MantraAttempts (default 3) the gate stands down
+  for the rest of the showing. A settings panel (bottom
+  left, titled as a hint) carries the gate switch, the
+  attempt limit, whether a key is set, and a plain account
+  of the gate. Shipped off.
+- 2026-10-27, 2.0.0: the companion, kitsune-mantra, joins
+  the package (content/companion/): a session window using
+  the same scene, with a practice mode. Its writer
+  (mantraconf.py) is the only thing that writes theme.conf:
+  one JSON line in on stdin, an atomic write out at
+  mode 600, public state back, never the key. The companion
+  shell stands at companion/run/ and loads MantraSetup by
+  absolute URL, because a quickshell config directory is an
+  import context and relative imports do not resolve there.
+- 2026-10-27: the gate is marked work in progress in the
+  README, the shipped theme.conf, the companion README,
+  and the hint panel. MantraGate stands off by default.
+  The basic login is finished and unaffected.
+- 2026-10-27: audit fixes. A refused gate answer no longer
+  tints later plain password failures; the hint panel's
+  attempt steppers cap at 9 like every other writer; order
+  read paths reject duplicate folds.
+- 2026-10-27: comment cleanup. Comments are now brief file
+  headers and rare one-line notes. TransparentWorld.qml is
+  trimmed to the tokens the face and the scene actually
+  read (11 of the 100 it carried); the recon colour tables,
+  the lexical highlighter, and the offline pill sets are
+  gone. The companion's rehearsal text now uses the
+  configured attempt count instead of a fixed three.

@@ -1,9 +1,7 @@
-/* InseiGotchi.qml — The Ase Companion & Tarot Gate · Holographic Scene
- * ============================================================
- * Ase floats in open space above a holographic Tarot reveal.
- * No device shell. Just the scene, the companion, and the sequence.
- * ============================================================ */
 pragma ComponentBehavior: Bound
+/* InseiGotchi.qml: Ase floating over the tarot reveal.
+ * No device shell: the scene, the companion, and the sequence. */
+
 import QtQuick
 import "../tw" as TW
 
@@ -19,22 +17,20 @@ Item {
     anchors.fill: parent
     visible: active
 
-    // ── Phase ─────────────────────────────────────────────────────────
     property int  _phase:      0
     property bool _isLoading:  _phase === 2
     property bool _isUnlocked: _phase === 3
     property bool _hasError:   false
 
-    // ── Tarot state ───────────────────────────────────────────────────
     property var    _layout:      []
     property string _challenge:   ""
     property var    _sequence:    []
-    property var    _tappedFolds: []   // fold IDs in tap order — drives card flip
+    property var    _tappedFolds: []
     property int    _lockedCount: 0
     property real   _entropy:     0.0
     property bool   _configured:  false
-    property int    _resetKey:    0    // increment to force card re-evaluation on reset
-    property bool   _readyToCast: false   // true when all 7 drawn, waiting for CAST
+    property int    _resetKey:    0
+    property bool   _readyToCast: false
 
     readonly property string _sequenceStr: _sequence.join(":")
 
@@ -47,7 +43,6 @@ Item {
     property bool _lockdown:     false
     property int  _lockdownSecs: 30
 
-    // ── Active fold ───────────────────────────────────────────────────
     property int   _activeFoldIdx:   -1
     property color _activeFoldColor: TW.TransparentWorld.accentWater
     property real  _activePulse:     0.0
@@ -59,7 +54,6 @@ Item {
         running: false
     }
 
-    // ── Breach ────────────────────────────────────────────────────────
     property real _breach: 0.0
     NumberAnimation {
         id: breachAnim
@@ -68,11 +62,10 @@ Item {
         easing.type: Easing.OutCubic; running: false
     }
 
-    // ── Whisper ───────────────────────────────────────────────────────
     property string _whisperTarget:  "the sigils await..."
     property string _whisperDisplay: ""
     property int    _whisperIdx:     0
-    property bool   _whisperStreaming: false   // true when AI is streaming
+    property bool   _whisperStreaming: false
 
     function _setWhisper(msg) {
         _whisperTarget    = msg
@@ -82,8 +75,6 @@ Item {
         whisperTimer.restart()
     }
 
-    // AI whisper — streams from local Ollama via kasugai dispatch
-    // Falls back to static msg if daemon is offline or response is slow
     function _whisperAI(context, fallback) {
         if (_daemonState !== "alive") { _setWhisper(fallback); return }
 
@@ -98,9 +89,7 @@ Item {
         var req = new XMLHttpRequest()
         req.onreadystatechange = function() {
             if (req.readyState === XMLHttpRequest.LOADING || req.readyState === XMLHttpRequest.DONE) {
-                // Stream tokens as they arrive
                 var raw = req.responseText || ""
-                // Parse SSE lines — each line is "data: {token}" or the full response
                 var lines = raw.split("\n")
                 var newText = ""
                 for (var i = 0; i < lines.length; i++) {
@@ -117,13 +106,11 @@ Item {
             }
             if (req.readyState === XMLHttpRequest.DONE) {
                 aseGotchi._whisperStreaming = false
-                // If nothing came back, use fallback
                 if (aseGotchi._whisperDisplay === "") aseGotchi._setWhisper(fallback)
             }
         }
         req.onerror = function() { aseGotchi._whisperStreaming = false; aseGotchi._setWhisper(fallback) }
 
-        // 3s timeout — gate must be fast
         var timeoutTimer = Qt.createQmlObject('import QtQuick; Timer { interval: 3000; repeat: false }', aseGotchi)
         timeoutTimer.triggered.connect(function() {
             if (aseGotchi._whisperStreaming && aseGotchi._whisperDisplay === "") {
@@ -150,7 +137,6 @@ Item {
         }
     }
 
-    // ── Daemon state ──────────────────────────────────────────────────
     property string _daemonState: "checking"
 
     function _fetchThreats() {
@@ -169,7 +155,6 @@ Item {
         req.send()
     }
 
-    // ── Lockdown ──────────────────────────────────────────────────────
     Timer {
         id: lockdownTimer; interval: 1000; repeat: true; running: aseGotchi._lockdown
         onTriggered: {
@@ -186,7 +171,6 @@ Item {
         }
     }
 
-    // ── Entrance / exit ───────────────────────────────────────────────
     property real _scale:   0.0
     property real _opacity: 0.0
     Behavior on _scale   { NumberAnimation { duration: 400; easing.type: Easing.OutBack; easing.overshoot: 0.25 } }
@@ -237,7 +221,6 @@ Item {
         }
     }
 
-    // ── Challenge fetch ───────────────────────────────────────────────
     function _fetchChallenge() {
         var req = new XMLHttpRequest()
         req.onreadystatechange = function() {
@@ -265,12 +248,10 @@ Item {
         req.send()
     }
 
-    // ── Fold helpers ──────────────────────────────────────────────────
     readonly property var _canonicalOrder: ["truth","power","wisdom","judgment","life","love","discipline"]
     readonly property var _foldColors: [
         "#4ade80","#f43f5e","#00B4D8","#9B1FA0","#818cf8","#f59e0b","#6366f1"
     ]
-    // Kasugai label — matches backend FOLDS and InseiScene
     readonly property var _foldLabelMap: ({
         "truth":      "THE EYE",
         "power":      "THE PHANTOM",
@@ -280,7 +261,6 @@ Item {
         "love":       "THE FORGE",
         "discipline": "THE MIRROR"
     })
-    // Principle name
     readonly property var _principleMap: ({
         "truth":      "TRUTH",
         "power":      "POWER",
@@ -297,7 +277,6 @@ Item {
         return 0
     }
 
-    // ── Card reset helper — clears sequence and forces flip-back ─────
     function _resetCards() {
         _sequence      = []
         _tappedFolds   = []
@@ -309,10 +288,8 @@ Item {
         _setupSeq2     = []
         _setupPhase2   = false
         _readyToCast   = false
-        _resetKey      = _resetKey + 1   // force delegate re-evaluation
+        _resetKey      = _resetKey + 1
     }
-
-    // ── Input ─────────────────────────────────────────────────────────
 
     function _onNumpad(key) {
         if (_lockdown || _phase !== 1) return
@@ -357,7 +334,6 @@ Item {
         }
     }
 
-    // ── Cast — fires verify after all 7 drawn ─────────────────────────
     function _cast() {
         if (_lockdown || _phase !== 1) return
         if (_setupMode) {
@@ -527,14 +503,12 @@ Item {
         }
     }
 
-    // ── Backdrop ──────────────────────────────────────────────────────
     Rectangle {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, aseGotchi._phase >= 1 ? 0.65 : 0.0)
         Behavior on color { ColorAnimation { duration: 500 } }
     }
 
-    // ── Scene ─────────────────────────────────────────────────────────
     InseiScene {
         id: scene
         anchors.fill: parent
@@ -568,14 +542,12 @@ Item {
         onCastRequested: aseGotchi._cast()
     }
 
-    // ── Time driver ───────────────────────────────────────────────────
     property real _time: 0.0
     NumberAnimation on _time {
         from: 0; to: 100000; duration: 100000000
         loops: Animation.Infinite; running: aseGotchi.active
     }
 
-    // ── Numpad focus trap ─────────────────────────────────────────────
     Item {
         id: numpadFocus
         anchors.fill: parent
@@ -597,7 +569,6 @@ Item {
                 event.accepted = true
 
             } else if (k === Qt.Key_B) {
-                // B — dev bypass (local only)
                 if (!aseGotchi._lockdown) {
                     aseGotchi._phase = 3
                     aseGotchi._setWhisper("sovereign passage · the seal yields")
@@ -606,7 +577,6 @@ Item {
                 event.accepted = true
 
             } else if (k === Qt.Key_R) {
-                // R — reshuffle
                 if (!aseGotchi._lockdown && aseGotchi._phase === 1) {
                     aseGotchi._resetCards()
                     aseGotchi._fetchChallenge()
@@ -641,7 +611,6 @@ Item {
                     aseGotchi._fetchChallenge()
                     aseGotchi._setWhisper("the cards scatter · read the new arrangement")
                 } else {
-                    // Clean state — exit the gate
                     aseGotchi._dismiss()
                     aseGotchi.catalystFailed()
                 }

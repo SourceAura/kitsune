@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the RyoStore manifest for Fūin by hashing the product folder.
+"""Rebuild the RyoStore manifest for Kitsune by hashing the product folder.
 
 Usage: build-manifest.py <product-dir>
 

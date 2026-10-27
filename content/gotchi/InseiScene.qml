@@ -1,13 +1,8 @@
-/* InseiScene.qml — The Holographic Ase-Gotchi Scene
- * ================================================
- * Layout top → bottom:
- *   Instruction hint  — fades after first tap
- *   Card arc          — 7 tarot cards fanning upward from Ase's mind
- *   Ase               — the dealer, center stage
- *   Whisper           — floating lowercase text, no background
- *   InseiHud            — entropy bar + lock count + live hash
- */
 pragma ComponentBehavior: Bound
+/* InseiScene.qml: the scene composition.
+ * Top to bottom: hint, the seven-card arc, Ase, the whisper,
+ * and InseiHud (entropy bar, lock count, live hash). */
+
 import QtQuick
 import QtQuick.Effects
 import "../tw" as TW
@@ -15,7 +10,6 @@ import "../tw" as TW
 Item {
     id: root
 
-    // ── Public API ────────────────────────────────────────────────────
     property int    lockedCount:     0
     property real   entropy:         0.0
     property bool   hasError:        false
@@ -24,7 +18,7 @@ Item {
     property string whisper:         ""
     property string sequenceStr:     ""
     property var    layout:          []
-    property var    tappedFolds:     []   // fold IDs tapped so far — drives correct flip
+    property var    tappedFolds:     []
     property real   time:            0.0
     property int    activeFoldIdx:   -1
     property color  activeFoldColor: TW.TransparentWorld.accentWater
@@ -32,11 +26,10 @@ Item {
     property real   breach:          0.0
     property bool   setupMode:       false
     property bool   setupPhase2:     false
-    property int    resetKey:        0    // incremented on reset to force delegate re-eval
+    property int    resetKey:        0
 
     signal cardTapped(string foldId, int position, real px, real py)
 
-    // ── Fold data — canonical, matches backend ────────────────────────
     readonly property var _foldIds: [
         "truth","power","wisdom","judgment","life","love","discipline"
     ]
@@ -53,7 +46,6 @@ Item {
         "\u25c9","\u2297","\u2694","\u25c8","\u2601","\u2b21","\u25cc"
     ]
 
-    // ── Geometry ──────────────────────────────────────────────────────
     readonly property real _cx: width / 2
 
     readonly property real _aseW: 320
@@ -61,17 +53,12 @@ Item {
     readonly property real _aseY: height * 0.42
 
     readonly property real _arcCX: _cx
-    // The captain's landing-day art direction (2026-10-25): the fan
-    // rides lower, nested closer over Ase's head, and the hint line
-    // above the arc — hers, "read the sigils · invoke your sequence" —
-    // stands clear of the cards and can be read whole.
     readonly property real _arcCY: _aseY + 24
     readonly property real _arcR:  180
 
     readonly property real _whisperY: _aseY + _aseH + 10
     readonly property real _hudY:     _whisperY + 44
 
-    // ── Instruction hint — fades after first tap ──────────────────────
     Text {
         x:       root._cx - implicitWidth / 2
         y:       root._arcCY - root._arcR - 84
@@ -84,7 +71,6 @@ Item {
         font.letterSpacing: 2
     }
 
-    // Setup instruction
     Text {
         x:       root._cx - implicitWidth / 2
         y:       root._arcCY - root._arcR - 84
@@ -97,7 +83,6 @@ Item {
         font.letterSpacing: 2
     }
 
-    // ── Card arc ──────────────────────────────────────────────────────
     Item {
         anchors.fill: parent
 
@@ -119,8 +104,6 @@ Item {
                     return index
                 }
 
-                // Correct flip: driven by whether this fold ID is in tappedFolds
-                // resetKey dependency forces re-evaluation when cards are reset
                 readonly property bool _isTapped: root.resetKey >= 0 && root.tappedFolds.indexOf(_fold.id || "") >= 0
                 readonly property int  _tapOrder: root.tappedFolds.indexOf(_fold.id || "")
 
@@ -135,7 +118,6 @@ Item {
                 isRevealed:  _isTapped
                 revealOrder: _tapOrder
 
-                // Convex-up arc: 210° → 330°
                 readonly property real _spreadDeg: 120.0
                 readonly property real _startDeg:  210.0
                 readonly property real _stepDeg:   _spreadDeg / 6.0
@@ -143,7 +125,6 @@ Item {
                 readonly property real _angleRad:  _angleDeg * Math.PI / 180.0
 
                 x: root._arcCX + root._arcR * Math.cos(_angleRad) - width  / 2
-                // y offset from TarotCard's own hover lift — base position here
                 y: root._arcCY + root._arcR * Math.sin(_angleRad) - height / 2
 
                 rotation: _angleDeg - 270.0
@@ -154,7 +135,6 @@ Item {
         }
     }
 
-    // ── Ase ───────────────────────────────────────────────────────────
     InseiCompanion {
         id: _ase
         x:      root._cx - implicitWidth  / 2
@@ -164,7 +144,6 @@ Item {
         time:      root.time
     }
 
-    // ── Whisper ───────────────────────────────────────────────────────
     Item {
         x:       root._cx - 200
         y:       root._whisperY
@@ -202,7 +181,6 @@ Item {
         }
     }
 
-    // ── Setup / Confirm badge ─────────────────────────────────────────
     Text {
         x:       root._cx - implicitWidth / 2
         y:       root._whisperY - 20
@@ -216,7 +194,6 @@ Item {
         font.letterSpacing: 3
     }
 
-    // ── InseiHud ────────────────────────────────────────────────────────
     InseiHud {
         x:         root._cx - width / 2
         y:         root._hudY
@@ -229,13 +206,10 @@ Item {
         tappedFolds: root.tappedFolds
     }
 
-    // ── CAST button — appears when all 7 cards are drawn ──────────────
-    // §16 — visible: stableGate (readyToCast), opacity handles show/hide
     signal castRequested()
 
     property bool readyToCast: false
 
-    // Shatter animation — fires on tap
     property real _castShatter: 0.0
     NumberAnimation {
         id: _shatterAnim
@@ -246,7 +220,6 @@ Item {
         onStopped: root._castShatter = 0.0
     }
 
-    // Dynamic label based on state
     readonly property string _castLabel: {
         if (setupMode && setupPhase2) return "CONFIRM THE BINDING"
         if (setupMode)                return "BIND THE SEQUENCE"
@@ -263,12 +236,11 @@ Item {
         opacity: root.readyToCast && !root.isUnlocked ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
 
-        // Crystallize shader background
         ShaderEffect {
             anchors.fill: parent
             property real u_time:        root.time
             property real u_confidence:  1.0
-            property real u_progress:    root.entropy   // fills as cards drawn
+            property real u_progress:    root.entropy
             property real u_shatter:     root._castShatter
             property real u_width:       width
             property real u_height:      height
@@ -279,7 +251,6 @@ Item {
             blending: true
         }
 
-        // Glass base behind shader so button is readable when entropy=0
         Rectangle {
             anchors.fill: parent
             radius: 8
@@ -297,7 +268,6 @@ Item {
             }
         }
 
-        // Label — above shader
         Text {
             anchors.centerIn: parent
             z: 2
@@ -327,7 +297,6 @@ Item {
         }
     }
 
-    // ── Public methods ────────────────────────────────────────────────
     function aseWake()         { _ase.wake() }
     function aseReact(col)     { _ase.react(col) }
     function aseHurt()         { _ase.hurt() }

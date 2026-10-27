@@ -1,3 +1,6 @@
+/* Main.qml: preserved record of the lock face as first built.
+ * Not installed. content/Main.qml is the shipped face for both doors. */
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -5,27 +8,9 @@ import Quickshell
 import Quickshell.Io
 import "gotchi"
 
-// KITSUNE — the lock face (built 2026-10-21, the captain's order).
-//
-// Ase, the seven-tailed kitsune, and her seven tarot folds — his old
-// lock-and-login composition, carried home from Mandara's seat where
-// it never belonged. Her scene (gotchi/) stands exactly as written;
-// the daemon she once spoke to (:8001) is gone, so the face drives
-// her from the threshold `gate` contract instead:
-//
-//   typing        -> one fold binds per character, Ase reacts
-//   7 bound       -> INVOKE THE SEAL rises (the Cast)
-//   gate.checking -> the binding speaks
-//   gate.failed   -> she is hurt, the cards scatter, the pill shakes
-//   gate.leaving  -> all seven revealed, she transforms, the seal opens
-//
-// The key is the machine's own: gate.password + gate.submit() (PAM).
-// No qs.* imports — a face stands on QtQuick/Quickshell alone, and
-// her colors come from the generated palette, read directly (Jariah).
 Item {
     id: root
 
-    // Handed by the host Loader a beat after creation — null-guarded.
     property var gate: null
     property var screen: null
 
@@ -33,7 +18,6 @@ Item {
 
     function focusField() { field.forceActiveFocus(); }
 
-    // ---- Jariah: the palette, read directly -------------------------
     property color palBackground: "#12131c"
     property color palText:       "#e3e1ef"
     property color palPrimary:    "#bec2ff"
@@ -55,16 +39,14 @@ Item {
             if (p.primary)    root.palPrimary = p.primary;
             if (p.secondary)  root.palSecondary = p.secondary;
             if (p.alert)      root.palAlert = p.alert;
-        } catch (e) { /* the fallbacks stand */ }
+        } catch (e) {    }
     }
 
-    // ---- Her fold canon (the scene's own, mirrored for the wiring) --
     readonly property var _foldIds: ["truth","power","wisdom","judgment","life","love","discipline"]
     readonly property var _foldLabels: ["THE EYE","THE PHANTOM","THE BLADE","THE SAGE","THE SHROUD","THE FORGE","THE MIRROR"]
     readonly property var _foldPrinciples: ["TRUTH","POWER","WISDOM","JUDGMENT","LIFE","LOVE","DISCIPLINE"]
     readonly property var _foldColors: ["#4ade80","#f43f5e","#00B4D8","#9B1FA0","#818cf8","#f59e0b","#6366f1"]
 
-    // ---- Face state, driven by the gate ------------------------------
     readonly property string _pw: root.gate ? root.gate.password : ""
     readonly property int _bound: Math.min(7, root._pw.length)
 
@@ -81,8 +63,6 @@ Item {
         running: false
     }
 
-    // Password entropy — the Seal face's definition: length lays the
-    // foundation, variety raises the storm.
     readonly property real _entropy: {
         const pw = root._pw;
         if (pw.length === 0) return 0;
@@ -92,7 +72,6 @@ Item {
         return Math.min(1, lenScore * 0.65 + variety * 0.25 + lenScore * variety * 0.3);
     }
 
-    // ---- The whisper (her typewriter, 22ms a letter) ------------------
     property string _whisperTarget: ""
     property string _whisperDisplay: ""
     property int    _whisperIdx: 0
@@ -113,14 +92,12 @@ Item {
         }
     }
 
-    // ---- Time driver (her scene breathes on it) -----------------------
     property real _time: 0.0
     NumberAnimation on _time {
         from: 0; to: 100000; duration: 100000000
         loops: Animation.Infinite; running: true
     }
 
-    // ---- The ground: the wallpaper, blurred and veiled ----------------
     Image {
         anchors.fill: parent
         source: root.gate && root.screen ? root.gate.wallpaperFor(root.screen.name) : ""
@@ -141,7 +118,6 @@ Item {
         color: Qt.alpha(root.palBackground, 0.55)
     }
 
-    // ---- Her scene -----------------------------------------------------
     InseiScene {
         id: scene
         anchors.fill: parent
@@ -164,7 +140,6 @@ Item {
         onCastRequested: if (root.gate) root.gate.submit()
     }
 
-    // ---- The key: the Seal's pill, at the foot of her scene ------------
     Column {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -242,7 +217,6 @@ Item {
         }
     }
 
-    // ---- Entrance -------------------------------------------------------
     Timer {
         id: manifestTimer; interval: 60; repeat: false
         onTriggered: {
@@ -252,7 +226,6 @@ Item {
     }
     Component.onCompleted: manifestTimer.restart()
 
-    // ---- The ceremony, driven by the gate --------------------------------
     Connections {
         target: root.gate
 
@@ -262,7 +235,6 @@ Item {
             if (root.gate.leaving) return;
 
             if (n > root._lastLen && bound > 0) {
-                // A new fold binds — Ase feels it.
                 const ci = bound - 1;
                 root._activeFoldIdx = ci;
                 root._activeFoldColor = root._foldColors[ci];
@@ -291,9 +263,6 @@ Item {
             if (root.gate.failed) {
                 scene.aseHurt();
                 shake.restart();
-                // Her deflect law: the cards scatter. The reason is
-                // spoken after the field clears, so it is not
-                // overwritten by the password-change it causes.
                 field.text = "";
                 if (root.gate) root.gate.password = "";
                 root._lastLen = 0;

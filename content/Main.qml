@@ -1,39 +1,18 @@
+/* Main.qml: the lock and greeter face. One file serves both doors.
+ * Login follows SDDM's model idiom: userModel and sessionModel on lastIndex,
+ * and sddm.login(user.toLowerCase(), password, session), because kitsune.conf
+ * sets AllowUppercaseLettersInUsernames=false. */
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
 import "gotchi"
 
-// KITSUNE — the greeter (built 2026-10-21, the captain's order).
-//
-// Ase and her seven folds at the outer door — the same composition
-// that guards the lock, seated over SDDM's own machinery. The login
-// speaks astronaut's exact idiom (the valence theme's Input.qml):
-// userModel/sessionModel ComboBoxes on lastIndex, and
-//   sddm.login(user.toLowerCase(), password, selectedSession)
-// because kitsune.conf carries AllowUppercaseLettersInUsernames=false,
-// the same rule valence runs. Nothing of SDDM's PAM path is touched.
-//
-//   typing        -> one fold binds per character, Ase reacts
-//   7 bound       -> INVOKE THE SEAL rises (the Cast = login)
-//   login failed  -> she is hurt, the cards scatter (astronaut's
-//                    failed flag + 2s resetError, her ceremony over it)
-//   login success -> all seven revealed, she transforms, the seal opens
-//
-// Self-contained by necessity: the greeter runs as user `sddm` and
-// cannot read the captain's home. Her palette is baked at install;
-// the ground is the manager-published still
-// (/var/lib/valence-greeter/wallpaper.jpg, world-readable), with a
-// theme-local copy underneath as the fallback.
-// The user ComboBox is omitted by design: one captain, one account —
-// the username field stands prefilled from userModel.lastUser and
-// stays editable.
 Rectangle {
     id: root
     color: "#06070c"
     focus: true
 
-    // Baked palette — matugen's word at install time (matches the
-    // lock face's live palette the night this was built).
     readonly property color palBackground: "#12131c"
     readonly property color palText:       "#e3e1ef"
     readonly property color palPrimary:    "#bec2ff"
@@ -56,13 +35,11 @@ Rectangle {
     property bool _failed: false
     property bool _leaving: false
 
-    // ---- Her fold canon (the scene's own, mirrored for the wiring) --
     readonly property var _foldIds: ["truth","power","wisdom","judgment","life","love","discipline"]
     readonly property var _foldLabels: ["THE EYE","THE PHANTOM","THE BLADE","THE SAGE","THE SHROUD","THE FORGE","THE MIRROR"]
     readonly property var _foldPrinciples: ["TRUTH","POWER","WISDOM","JUDGMENT","LIFE","LOVE","DISCIPLINE"]
     readonly property var _foldColors: ["#4ade80","#f43f5e","#00B4D8","#9B1FA0","#818cf8","#f59e0b","#6366f1"]
 
-    // ---- Ceremony state, driven by the password field -----------------
     readonly property string _pw: passwordField.text
     readonly property int _bound: Math.min(7, root._pw.length)
 
@@ -72,11 +49,6 @@ Rectangle {
     property real  _activePulse: 0.0
     property int   _lastLen: 0
 
-    // ---- The mantra gate ------------------------------------------------
-    // theme.conf speaks two keys (both optional):
-    //   MantraGate=true            — the gate stands at this door
-    //   MantraOrder=truth,power,…  — your order of the seven folds
-    // With neither key set, the face is a plain password door, as before.
     readonly property bool _gateDefault: typeof config !== "undefined" && config.MantraGate === "true"
     readonly property var _gateOrder: {
         const raw = (typeof config !== "undefined" && config.MantraOrder) ? String(config.MantraOrder) : "";
@@ -87,14 +59,10 @@ Rectangle {
     property bool _gateOn: root._gateDefault
     property bool _gatePassed: !root._gateDefault
     readonly property bool _gateActive: root._gateOn && !root._gatePassed
-    property var _gateDeal: []      // the fold id dealt to each fan slot
-    property var _gateEntry: []     // the slot numbers spoken so far
-    // MantraPass in theme.conf is the key the mantra speaks to PAM when
-    // the sequence is right. Empty (the shipped way) = the gate opens
-    // onto the password field instead. It is a password in plain text:
-    // it belongs only on a seat whose theme.conf no one else can read.
+    property var _gateDeal: []
+    property var _gateEntry: []
     readonly property string _mantraPass: (typeof config !== "undefined" && config.MantraPass) ? String(config.MantraPass) : ""
-    property bool _gateAttempt: false   // the last login came from the gate
+    property bool _gateAttempt: false
     readonly property int _gateMaxDefault: {
         const n = (typeof config !== "undefined" && config.MantraAttempts) ? parseInt(String(config.MantraAttempts), 10) : NaN;
         return isNaN(n) ? 3 : Math.max(1, Math.min(9, n));
@@ -146,7 +114,6 @@ Rectangle {
             root._setWhisper("the sequence is complete · invoke the seal to pass");
     }
 
-    // ---- The gate's dealing and answering --------------------------------
     function _deal() {
         const ids = root._foldIds.slice();
         for (let i = ids.length - 1; i > 0; i--) {
@@ -164,7 +131,7 @@ Rectangle {
     }
     function _gateDigit(d) {
         if (!root._gateActive || d < 1 || d > 7) return;
-        if (root._gateEntry.indexOf(d) >= 0) return;   // a slot is spoken once
+        if (root._gateEntry.indexOf(d) >= 0) return;
         root._gateEntry = root._gateEntry.concat([d]);
         root._tapped = root._gateEntry.map(function(e) { return root._gateDeal[e - 1]; });
         const ci = root._foldIds.indexOf(root._gateDeal[d - 1]);
@@ -278,7 +245,6 @@ Rectangle {
     Timer { id: gateRedealTimer; interval: 900; repeat: false
         onTriggered: { root._deal(); root._setWhisper("the sigils are dealt · speak the mantra in its order"); gateField.forceActiveFocus(); } }
 
-    // ---- The whisper (her typewriter, 22ms a letter) ------------------
     property string _whisperTarget: ""
     property string _whisperDisplay: ""
     property int    _whisperIdx: 0
@@ -299,19 +265,13 @@ Rectangle {
         }
     }
 
-    // ---- Time driver ---------------------------------------------------
     property real _time: 0.0
     NumberAnimation on _time {
         from: 0; to: 100000; duration: 100000000
         loops: Animation.Infinite; running: true
     }
 
-    // ---- The ground -----------------------------------------------------
-    // The port veils BOTH layers (2026-10-25, the captain's word: the
-    // current wallpaper shows through the lock, blurred for privacy).
-    // In the shell the theme-local copy stood raw beneath the manager's
-    // blurred still; standing alone it would have shown the picture
-    // plain at the door. Same blur, same dimming, same easing as hers.
+    // Ground layers, bottom to top: theme wallpaper, greeter copy, session capture.
     Item {
         id: groundStack
         anchors.fill: parent
@@ -345,10 +305,6 @@ Rectangle {
             Behavior on brightness { NumberAnimation { duration: 380; easing.type: Easing.OutQuad } }
         }
     }
-    // The desktop at the lock's instant (fuin-lock sets it down in the
-    // runtime tmpfs on the way in), veiled like the rest of the ground.
-    // When no capture waits — an idle lock, the greeter — this draws
-    // nothing and the wallpaper ground stands, as before.
     Image {
         anchors.fill: parent
         source: "file:///run/user/1000/fuin-desktop.png"
@@ -378,7 +334,6 @@ Rectangle {
         visible: false
     }
 
-    // ---- The pulse (energy in the glass — calm, surges, rare crackle) ---
     ShaderEffect {
         anchors.fill: parent
         fragmentShader: "shaders/pulse.frag.qsb"
@@ -429,7 +384,6 @@ Rectangle {
         NumberAnimation { target: root; property: "_pulseCrackle"; to: 0; duration: 420; easing.type: Easing.OutQuad }
     }
 
-    // ---- Her scene (rides high — the fields hold the foot) --------------
     InseiScene {
         id: scene
         anchors.top: parent.top
@@ -460,7 +414,6 @@ Rectangle {
         }
     }
 
-    // ---- The login (astronaut's call, letter for letter) -----------------
     function _submitLogin(pw) {
         if (root._checking || root._leaving) return;
         root._checking = true;
@@ -504,18 +457,16 @@ Rectangle {
         }
     }
     Timer { id: resetError; interval: 2000; repeat: false; onTriggered: root._failed = false }
-            // A refused key stands the gate down; the switch is manual.
     Timer {
         id: failWhisper; interval: 150; repeat: false
         onTriggered: {
             root._setWhisper(root._refusedWasGate
-                ? "the binding refuses · the stored key was refused — your password, then"
+                ? "the binding refuses · the stored key was refused: your password, then"
                 : "the binding refuses · login failed");
             root._refusedWasGate = false;
         }
     }
 
-    // ---- The gate's ear: a quiet field that only listens for digits ------
     TextField {
         id: gateField
         opacity: 0
@@ -539,7 +490,6 @@ Rectangle {
         }
     }
 
-    // ---- The fields, at the foot of her scene -----------------------------
     Column {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -633,7 +583,6 @@ Rectangle {
             }
         }
 
-        // The session, astronaut's ComboBox idiom in quiet dress.
         ComboBox {
             id: sessionSelect
             property var selectedSession: currentIndex
@@ -685,7 +634,6 @@ Rectangle {
 
     }
 
-    // ---- The hint: the face explains itself --------------------------------
     Row {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
@@ -733,7 +681,7 @@ Rectangle {
             spacing: 11
 
             Text {
-                text: "MANTRA GATE — THE HINT"
+                text: "MANTRA GATE · THE HINT"
                 color: root.palText
                 font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                 font.pixelSize: 12
@@ -808,8 +756,8 @@ Rectangle {
             }
             Text {
                 text: root._mantraPass.length > 0
-                    ? "key: a stored key is set — a right sequence unlocks"
-                    : "key: none set — a right sequence opens the password field"
+                    ? "key: a stored key is set: a right sequence unlocks"
+                    : "key: none set: a right sequence opens the password field"
                 color: Qt.alpha(root.palText, 0.7)
                 font.family: "3270 Nerd Font Mono, Fira Code, monospace"
                 font.pixelSize: 11
@@ -817,12 +765,12 @@ Rectangle {
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: "Work in progress: the gate is still under construction — the password login beneath it is finished. The gate deals the seven folds shuffled at every showing. Answer with the slot "
-                    + "numbers — keys 1 to 7, or tap the cards — in your order of the folds, then invoke "
+                text: "Work in progress: the gate is still under construction; the password login beneath it is finished. The gate deals the seven folds shuffled at every showing. Answer with the slot "
+                    + "numbers (keys 1 to 7, or tap the cards) in your order of the folds, then invoke "
                     + "the seal (Enter). A wrong sequence redeals; after the attempt limit the gate "
                     + "stands down to the password field and stays down until a human stands it again. "
                     + "The switch is manual. The gate is a sequence in front of PAM: what PAM checks is "
-                    + "a password — typed here, or the stored key a right sequence speaks. Standing "
+                    + "a password, typed here, or the stored key a right sequence speaks. Standing "
                     + "choices live in theme.conf: MantraGate, MantraOrder, MantraAttempts, MantraPass. "
                     + "Changes in this panel last for this showing. kitsune-mantra, the companion, "
                     + "sets the standing choices from your session. Keys: h this hint, g the gate, "
@@ -845,7 +793,6 @@ Rectangle {
         }
     }
 
-    // ---- The door's other duties: power ----------------------------------
     Row {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -928,7 +875,6 @@ Rectangle {
         }
     }
 
-    // ---- Entrance ---------------------------------------------------------
     Timer {
         id: manifestTimer; interval: 60; repeat: false
         onTriggered: {

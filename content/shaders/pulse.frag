@@ -1,10 +1,9 @@
 #version 440
-// pulse — energy in the glass over the veiled ground.
-// Filaments breathe; a surge front sweeps; crackle flares.
-// The water shares this field. Uniforms: u_time seconds,
-// u_surge / u_crackle envelopes, u_front surge position,
-// u_src the ground, u_ripples[3] (xy origin, z birth,
-// w strength), u_calm filament level, u_res resolution.
+
+// pulse.frag: energy filaments over the veiled ground.
+// Filaments breathe, a surge front sweeps, crackle flares.
+// Uniforms: u_time, u_surge, u_front, u_crackle, u_calm, u_click,
+// u_clickAge, u_aspect. u_ground is the ground sampler.
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;
@@ -41,7 +40,6 @@ float fbm(vec2 p) {
 void main() {
     vec2 uv = qt_TexCoord0;
 
-    // ---- the water first: its slope field bends the ground sample
     float ct = u_clickAge;
     vec2 bend = vec2(0.0);
     float crestLight = 0.0;
@@ -68,7 +66,6 @@ void main() {
                               exp(-pow((d - rk + 0.007) * 34.0, 2.0))) * amp;
             crestLight += exp(-pow((d - rk) * 70.0, 2.0)) * amp;
         }
-        // capillary shimmer riding inside the train
         float cap = sin(d * 230.0 - ct * 6.0) * 0.5 + 0.5;
         crestLight += cap * 0.05 * env * exp(-max(rad - d, 0.0) * 4.0);
         bend = vec2(rdir.x / u_aspect, rdir.y) * slope * 0.00013;
@@ -77,7 +74,6 @@ void main() {
     }
     vec3 ground = texture(u_ground, clamp(uv + bend, 0.001, 0.999)).rgb;
 
-    // ---- the sleeping energy, over the (possibly bent) ground
     float drift = u_time * 0.014;
     float f = fbm(uv * vec2(9.0, 5.0) + vec2(drift, drift * 0.6));
     float vein = pow(clamp(1.0 - abs(2.0 * f - 1.0), 0.0, 1.0), 14.0);

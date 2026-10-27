@@ -1,18 +1,9 @@
 #version 440
-// ShiguruiSoul.frag — Neural Core + 7-Fold Swarm
-// Extracted from SanctumCorridors.frag.
-//
-// Inspirations:
-//   Neural Synapse (VoXelo)  — action potential wave, soma biology
-//   Drifting 3D Spell (SourceAura) — iridescent film, Fresnel, crackle
-//
-// Layers (bottom → top):
-//   1. Shigurui Core — organic simplex sphere, iridescent film, Fresnel rim,
-//      geodesic cage, singularity void
-//   2. 7-Fold Swarm — one packet per fold, canonical hues, orbit collapses
-//      on inferring/commandPulse
-//   3. Action Potential Ring — expands outward on commandPulse, rainbow sweep
-//   4. Surface Crackle — brief electric tendrils on commandPulse spike
+
+// InseiSoul.frag: the core and sevenfold swarm.
+// An iridescent sphere with a geodesic cage, seven orbiting packets,
+// an outward ring on command pulse, and surface crackle on spikes.
+// Draws on VoXelo's Neural Synapse and the author's Drifting 3D Spell.
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;
@@ -32,10 +23,9 @@ layout(std140, binding = 0) uniform buf {
     float h;
     float mistDensity;
     float atmospherePhase;
-    float receivePulse;   // 0→1: inward ring — query received, Ase listening
+    float receivePulse;
 } ubuf;
 
-// ── Utilities ─────────────────────────────────────────────────────────
 float hash11(float n) { return fract(sin(n) * 43758.5453); }
 float hash21(vec2 p)  { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 
@@ -57,7 +47,6 @@ float hexSDF(vec2 p, float r) {
     return max(dot(p, normalize(vec2(1.0, 1.732))), p.x) - r;
 }
 
-// ── Simplex 3D ────────────────────────────────────────────────────────
 vec3 mod289v3(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
 vec4 mod289v4(vec4 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
 vec4 permute(vec4 x)  { return mod289v4(((x * 34.0) + 1.0) * x); }
@@ -106,12 +95,10 @@ float snoise3(vec3 v) {
     return 42.0 * dot(m * m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
 }
 
-// ── Rainbow palette (Neural Synapse style) ────────────────────────────
 vec3 palette(float t) {
     return vec3(0.5) + vec3(0.5) * cos(6.28318 * (vec3(1.0) * t + vec3(0.0, 0.33, 0.67)));
 }
 
-// ── Shigurui Core ─────────────────────────────────────────────────────
 float shiguruiCore(vec2 p, float t, float metabolism,
                    out vec3 rimColor, out float iridescence) {
     float r = length(p);
@@ -133,7 +120,6 @@ float shiguruiCore(vec2 p, float t, float metabolism,
                   * smoothstep(boundary * 0.5, boundary, r)
                   * (0.7 + fresnel * 0.8);
 
-    // Iridescent film — R/G/B at different wavelengths
     float filmThickness = 280.0 + nd * 420.0 + noise(p * 4.0 + vec2(t * 0.05)) * 180.0;
     vec3 film = vec3(
         sin(filmThickness / 700.0 * 18.0 + t * 0.5) * 0.5 + 0.5,
@@ -143,7 +129,6 @@ float shiguruiCore(vec2 p, float t, float metabolism,
     iridescence = rim * (0.4 + metabolism * 0.3);
     rimColor    = film;
 
-    // Singularity void — deeper than before
     float singR    = 0.020;
     float singVoid = smoothstep(singR, singR * 0.3, r);
     float singAngle = a - t * 0.8;
@@ -156,7 +141,6 @@ float shiguruiCore(vec2 p, float t, float metabolism,
     return core + rim * 0.7 - singVoid * 0.7 + singHex + flare * core;
 }
 
-// ── 7-Fold Swarm ──────────────────────────────────────────────────────
 vec3 foldSwarm(vec2 p, float t, int foldIdx, float metabolism, float pull,
                out float intensity) {
     float fi   = float(foldIdx);
@@ -170,7 +154,6 @@ vec3 foldSwarm(vec2 p, float t, int foldIdx, float metabolism, float pull,
 
     vec2 pos = vec2(cos(angle) * orbitR, sin(angle + t * seed * 0.3) * orbitR * 0.7);
 
-    // Emission trail — ghost at previous position
     float trailAngle = angle - 0.18 * speed;
     vec2 trailPos = vec2(cos(trailAngle) * orbitR, sin(trailAngle + t * seed * 0.3) * orbitR * 0.7);
 
@@ -181,15 +164,14 @@ vec3 foldSwarm(vec2 p, float t, int foldIdx, float metabolism, float pull,
     float core  = smoothstep(0.013, 0.004, abs(p.x - pos.x) + abs(p.y - pos.y));
     intensity   = core * 0.85 + glow * 0.5 + trail * 0.3;
 
-    // Fold hues — canonical TransparentWorld mapping
     float hues[7];
-    hues[0] = 0.38;  // Eye     — emerald
-    hues[1] = 0.55;  // Blade   — cerulean
-    hues[2] = 0.82;  // Sage    — blood violet
-    hues[3] = 0.68;  // Mirror  — indigo
-    hues[4] = 0.12;  // Forge   — amber
-    hues[5] = 0.97;  // Phantom — rose
-    hues[6] = 0.70;  // Shroud  — lavender
+    hues[0] = 0.38;
+    hues[1] = 0.55;
+    hues[2] = 0.82;
+    hues[3] = 0.68;
+    hues[4] = 0.12;
+    hues[5] = 0.97;
+    hues[6] = 0.70;
 
     float hue = hues[foldIdx];
     float foldMatch = 1.0 - abs(hue - ubuf.disciplineHue) * 2.0;
@@ -208,11 +190,10 @@ void main() {
     float breach = 1.0 - ubuf.mistDensity;
 
     float metabolism  = 1.0 + ubuf.inferring * 1.5 + ubuf.tpsBeat * 0.8;
-    float nucleusScale = 1.75 + ubuf.obeliskOpen * 0.38;  // doubled from 3.5
+    float nucleusScale = 1.75 + ubuf.obeliskOpen * 0.38;
     float pull = clamp(ubuf.inferring * ubuf.tpsBeat + ubuf.commandPulse * 0.6, 0.0, 1.0);
     vec2  localP = (p - center) * nucleusScale;
 
-    // ── 1. Shigurui Core ─────────────────────────────────────────────
     vec3  rimCol; float irid;
     float nucleus = shiguruiCore(localP, ubuf.time, metabolism, rimCol, irid);
 
@@ -225,7 +206,6 @@ void main() {
 
     color += iridCol * nucleus * (0.9 + ubuf.inferring * 0.3);
 
-    // ── 2. 7-Fold Swarm ───────────────────────────────────────────────
     for (int fi = 0; fi < 7; fi++) {
         float pIntensity;
         vec3 pCol = foldSwarm(localP, ubuf.time, fi, metabolism, pull, pIntensity);
@@ -233,9 +213,6 @@ void main() {
         color += pCol * pIntensity * 0.45;
     }
 
-    // ── 3. Action Potential Ring (Neural Synapse) ─────────────────────
-    // Expands outward from core when commandPulse fires.
-    // Rainbow palette sweep — the "firing" moment.
     if (ubuf.commandPulse > 0.02) {
         float dist = length(p - center);
         float maxR      = 0.38 * asp;
@@ -252,25 +229,17 @@ void main() {
         color += waveCol * (edge * 2.0 + residual);
     }
 
-    // ── 3b. Receive Ring — inward contraction (query received) ────────
-    // Starts at outer edge, contracts toward core as receivePulse 0→1.
-    // Discipline hue — cooler, focused. "The signal arrives."
     if (ubuf.receivePulse > 0.02) {
         float dist  = length(p - center);
         float maxR  = 0.38 * asp;
-        // Inward: waveFront shrinks from maxR to 0 as receivePulse goes 0→1
         float waveFront = (1.0 - ubuf.receivePulse) * maxR;
         float distFromWave = dist - waveFront;
 
-        // Leading edge — slightly wider than outward ring for softer feel
         float edge = exp(-pow(distFromWave, 2.0) / 0.00018) * ubuf.receivePulse;
-        // Trailing wake — fills inward behind the contracting front
         float wake = smoothstep(waveFront, waveFront + 0.06, dist) * ubuf.receivePulse * 0.20;
 
-        // Discipline hue with slight iridescent shift
         float angle = atan(p.y - center.y, p.x - center.x);
         vec3 receiveCol = hsv2rgb(vec3(ubuf.disciplineHue, 0.90, 1.0));
-        // Subtle angular shimmer — not full rainbow, just a hint
         receiveCol = mix(receiveCol,
                          hsv2rgb(vec3(mod(ubuf.disciplineHue + 0.15, 1.0), 0.75, 1.0)),
                          abs(sin(angle * 3.0 + ubuf.time * 0.3)) * 0.35);
@@ -278,22 +247,18 @@ void main() {
         color += receiveCol * (edge * 1.8 + wake);
     }
 
-    // ── 4. Surface Crackle (Spell bubble) ────────────────────────────
-    // Brief electric tendrils on the core surface when commandPulse spikes.
     if (ubuf.commandPulse > 0.65) {
         float dist = length(localP);
         float boundary = 0.12;
-        // Only on the core surface
         float surfaceMask = exp(-pow(dist - boundary, 2.0) / 0.0008);
         float crackle = noise(localP * 18.0 + vec2(ubuf.time * 4.0)) * 0.5 + 0.5;
-        crackle = pow(crackle, 6.0);  // sharpen to tendrils
+        crackle = pow(crackle, 6.0);
         float intensity = crackle * surfaceMask * (ubuf.commandPulse - 0.65) * 3.0;
         vec3 crackleCol = mix(vec3(0.8, 0.9, 1.0),
                               hsv2rgb(vec3(ubuf.disciplineHue, 0.6, 1.0)), 0.5);
         color += crackleCol * intensity;
     }
 
-    // Alpha — additive over the sanctum background
     float alpha = length(color) * ubuf.qt_Opacity * 0.92;
     fragColor = vec4(color, clamp(alpha, 0.0, 1.0));
 }

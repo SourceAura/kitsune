@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
-# sync-local.sh — seat Kitsune in the local RyoStore catalogue tree and
+# sync-local.sh: seat Kitsune in the local RyoStore catalogue tree and
 # reinstall it, for the development loop.
-#
-#   repo (this folder's parent tree, as lockscreens/kitsune)
-#     -> ~/Documents/GitHub/ryostore-local (the stable local catalogue)
-#     -> ryostore install lockscreens kitsune
-#
-# The local tree is the durable seat: the file:// override in
-# ~/.config/ryoku/ryostore-base points there, and the tree is never
-# branch-switched, so a store refresh cannot unseat the theme.
+# The local tree is never branch-switched, so a store refresh cannot
+# unseat the theme.
 set -eu
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -16,7 +10,7 @@ STAGE="$HOME/Documents/GitHub/ryostore-local"
 PRODUCT="$STAGE/lockscreens/kitsune"
 
 if [ ! -f "$HOME/.config/ryoku/ryostore-base" ]; then
-    echo "sync-local: no ryostore-base override — the store is serving the published catalogue; refusing" >&2
+    echo "sync-local: no ryostore-base override: the store is serving the published catalogue; refusing" >&2
     exit 1
 fi
 
@@ -48,8 +42,8 @@ ryostore remove lockscreens kitsune >/dev/null 2>&1 || true
 rm -rf "$HOME/.local/share/qylock/themes/kitsune"
 ryostore install lockscreens kitsune
 
-# Her ground on this machine: the theme-local Backgrounds seat, linked
-# to the current wallpaper — the lock shows it blurred (his word).
+# The lock's ground on this machine: the theme Backgrounds folder,
+# linked to the current wallpaper.
 WP="$(python3 -c "import json; print(json.load(open('$HOME/.config/jurai/wallpaper.json'))['path'])" 2>/dev/null || true)"
 if [ -n "$WP" ] && [ -f "$WP" ]; then
     mkdir -p "$HOME/.local/share/qylock/themes/kitsune/Backgrounds"

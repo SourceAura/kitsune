@@ -1,3 +1,5 @@
+/* shell.qml: standalone Quickshell window for kitsune-mantra. */
+
 import Quickshell
 import QtQuick
 

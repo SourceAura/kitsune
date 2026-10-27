@@ -1,9 +1,7 @@
-/* InseiTarot.qml — Mystical 7-Fold Card
- * ==========================================
- * Holographic card with 3D flip, idle breathe, hover lift, fold-color glow.
- * Back face: position number + large glowing fold sigil + hover tooltip.
- * Front face: fold label + principle after reveal.
- */
+/* InseiTarot.qml: one fold card.
+ * Holographic card with a 3D flip, idle breathe, and hover lift.
+ * Back: position number and fold sigil. Front: label and principle. */
+
 import QtQuick
 import QtQuick.Effects
 import "../tw" as TW
@@ -18,9 +16,9 @@ Item {
     property color  accent:      "#4ade80"
     property bool   isRevealed:  false
     property int    revealOrder: -1
-    property int    position:    1      // shuffled position 1–7 (shown on back)
+    property int    position:    1
     property real   time:        0.0
-    property real   _phase:      0.0   // idle breathe phase offset
+    property real   _phase:      0.0
 
     implicitWidth:  70
     implicitHeight: 110
@@ -28,21 +26,17 @@ Item {
     signal tapped()
     signal alreadyDrawn()
 
-    // ── Hover lift ────────────────────────────────────────────────────
     property real _hoverLift: _hov.hovered && !isRevealed ? -8.0 : 0.0
     Behavior on _hoverLift { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
     y: _hoverLift
 
-    // ── Flip ──────────────────────────────────────────────────────────
     property real _flipAngle: isRevealed ? 180.0 : 0.0
     Behavior on _flipAngle { NumberAnimation { duration: 550; easing.type: Easing.OutBack; easing.overshoot: 0.18 } }
 
-    // ── Idle breathe — unrevealed only ───────────────────────────────
     readonly property real _breathe: isRevealed ? 0.0
         : 0.04 * Math.sin(time * 0.9 + _phase)
 
-    // ── Already-drawn flash ───────────────────────────────────────────
     property real _flashOpacity: 1.0
     SequentialAnimation {
         id: _flashAnim
@@ -51,10 +45,8 @@ Item {
     }
     opacity: _flashOpacity
 
-    // ── Hover tooltip — shown above card when hovered and not revealed ─
     Item {
         id: _tooltip
-        // Positioned above the card, centered
         x:       (root.implicitWidth - _tooltipBg.width) / 2
         y:       -_tooltipBg.height - 6
         width:   _tooltipBg.width
@@ -111,7 +103,6 @@ Item {
                 }
             }
 
-            // Tooltip glow
             layer.enabled: _hov.hovered
             layer.effect: MultiEffect {
                 shadowEnabled: true
@@ -124,7 +115,6 @@ Item {
         }
     }
 
-    // ── Card container — 3D Y-axis rotation ──────────────────────────
     Item {
         id: _container
         anchors.fill: parent
@@ -136,7 +126,6 @@ Item {
             angle: root._flipAngle
         }
 
-        // ── Back face ─────────────────────────────────────────────────
         Rectangle {
             id: _back
             anchors.fill: parent
@@ -149,14 +138,12 @@ Item {
             border.width: 1
             Behavior on border.color { ColorAnimation { duration: 120 } }
 
-            // Geometric lattice — tints toward accent on hover
             Canvas {
                 id: _lattice
                 anchors { fill: parent; margins: 2 }
                 renderStrategy: Canvas.Cooperative
                 renderTarget:   Canvas.FramebufferObject
 
-                // Dirty-flag repaint on hover change only
                 property bool _dirty: false
                 onVisibleChanged: _dirty = true
 
@@ -193,7 +180,6 @@ Item {
                 }
             }
 
-            // Position number — top left
             Text {
                 anchors { top: parent.top; left: parent.left; margins: 5 }
                 text:           root.position.toString()
@@ -206,7 +192,6 @@ Item {
                 Behavior on color { ColorAnimation { duration: 120 } }
             }
 
-            // ── Fold sigil — center, large, glowing ───────────────────
             Item {
                 id: _sigilContainer
                 anchors.centerIn: parent
@@ -227,7 +212,6 @@ Item {
                     Behavior on color { ColorAnimation { duration: 120 } }
                 }
 
-                // Sigil bloom — dedicated glow layer on the sigil itself
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     shadowEnabled: true
@@ -246,7 +230,6 @@ Item {
                 }
             }
 
-            // Position number — bottom right (mirror)
             Text {
                 anchors { bottom: parent.bottom; right: parent.right; margins: 5 }
                 text:           root.position.toString()
@@ -259,7 +242,6 @@ Item {
                 Behavior on color { ColorAnimation { duration: 120 } }
             }
 
-            // Card outer glow — hover intensifies in accent color
             layer.enabled: !root.isRevealed
             layer.effect: MultiEffect {
                 shadowEnabled: true
@@ -273,7 +255,6 @@ Item {
             }
         }
 
-        // ── Front face ────────────────────────────────────────────────
         Rectangle {
             id: _front
             anchors.fill: parent
@@ -327,7 +308,6 @@ Item {
                 }
             }
 
-            // Reveal order badge
             Rectangle {
                 anchors { top: parent.top; right: parent.right; margins: 4 }
                 width: 14; height: 14; radius: 7

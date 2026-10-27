@@ -1,9 +1,7 @@
-/* InseiHud.qml — Gate Telemetry Strip
- * =====================================
- * 7 fold sigil dots + entropy bar + live hash.
- * Dots fill with fold color as each card is tapped.
- * Centered under InseiCompanion.
- */
+/* InseiHud.qml: gate telemetry strip.
+ * Seven fold dots, an entropy bar, and the live hash, centred
+ * under InseiCompanion. Dots fill as cards are tapped. */
+
 import QtQuick
 import QtQuick.Effects
 import "../tw" as TW
@@ -16,14 +14,13 @@ Item {
     property string password:   ""
     property bool   isLoading:  false
     property real   time:       0.0
-    property var    tappedFolds: []   // fold IDs in tap order
+    property var    tappedFolds: []
 
     implicitHeight: 52
     implicitWidth:  320
     opacity: entropy > 0 || isLoading ? 1.0 : 0.0
     Behavior on opacity { NumberAnimation { duration: 400 } }
 
-    // Canonical fold order + sigils + colors — matches backend
     readonly property var _folds: [
         { id: "truth",      sigil: "◉", color: "#4ade80" },
         { id: "power",      sigil: "⊗", color: "#f43f5e" },
@@ -38,7 +35,6 @@ Item {
         anchors.centerIn: parent
         spacing: 6
 
-        // ── 7 fold sigil dots ─────────────────────────────────────────
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 14
@@ -54,7 +50,6 @@ Item {
                     readonly property int   _order:  root.tappedFolds.indexOf(_fd.id)
                     readonly property color _col:    Qt.color(_fd.color)
 
-                    // Outer glow ring — visible when tapped
                     Rectangle {
                         anchors.centerIn: parent
                         width: 20; height: 20; radius: 10
@@ -64,7 +59,6 @@ Item {
                         Behavior on border.color { ColorAnimation { duration: 300 } }
                     }
 
-                    // Sigil text
                     Text {
                         anchors.centerIn: parent
                         text:  _fd.sigil
@@ -74,7 +68,6 @@ Item {
                         font.pixelSize: 13
                         Behavior on color { ColorAnimation { duration: 250 } }
 
-                        // Pop-in scale when tapped
                         scale: _tapped ? 1.0 : 0.85
                         Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
@@ -87,7 +80,6 @@ Item {
                         }
                     }
 
-                    // Tap order number — tiny, below sigil, fades in when tapped
                     Text {
                         anchors { top: parent.bottom; horizontalCenter: parent.horizontalCenter; topMargin: 1 }
                         text:    _order >= 0 ? (_order + 1).toString() : ""
@@ -102,7 +94,6 @@ Item {
             }
         }
 
-        // ── Entropy bar ───────────────────────────────────────────────
         Item {
             width:  320
             height: 2
@@ -121,7 +112,6 @@ Item {
             }
         }
 
-        // ── Live hash ─────────────────────────────────────────────────
         InseiLiveHash {
             anchors.horizontalCenter: parent.horizontalCenter
             width:    320

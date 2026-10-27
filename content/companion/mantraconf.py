@@ -20,24 +20,26 @@ KNOWN = {"AllowUppercaseLettersInUsernames", "MantraGate", "MantraOrder",
          "MantraAttempts", "MantraPass"}
 
 TEMPLATE = """[General]
-# Kitsune — Ase, the seven-tailed kitsune, at the door.
+# Kitsune lock theme settings.
 #
-# AllowUppercaseLettersInUsernames — the greeter's username rule.
-# With it false, the name is lowered before it is spoken to PAM.
+# AllowUppercaseLettersInUsernames: the greeter's username rule.
+# With it false, the name is lowered before it is passed to PAM.
 AllowUppercaseLettersInUsernames={uppercase}
 #
-# The mantra gate — a sequence in front of the password field.
+# The mantra gate: a sequence in front of the password field.
+# WORK IN PROGRESS: the gate is still under construction. The
+# password login it stands in front of is finished and unaffected.
 # MantraGate=true stands it: the seven folds are dealt shuffled
-# at every showing and answered — slot numbers, typed or tapped —
+# at every showing and answered, by slot number, typed or tapped,
 # in your MantraOrder before the field opens.
 MantraGate={gate}
 MantraOrder={order}
 #
-# MantraAttempts — wrong sequences allowed before the gate stands
+# MantraAttempts: wrong sequences allowed before the gate stands
 # down to the password field for the rest of the showing.
 MantraAttempts={attempts}
 #
-# MantraPass — leave empty. When set, a right sequence logs in
+# MantraPass: leave empty. When set, a right sequence logs in
 # directly with this key. It is your password in plain text;
 # this file is mode 600. Keep it that way, or leave it empty.
 MantraPass={mantra_pass}

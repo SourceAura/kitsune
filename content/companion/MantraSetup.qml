@@ -1,9 +1,7 @@
-/* MantraSetup.qml — kitsune-mantra's one window.
- *
- * Speak your order by tapping the cards or typing their numbers;
- * both are the same act, as at the door. Sealing hands the result
- * to mantraconf.py, which writes theme.conf at mode 600.
- */
+/* MantraSetup.qml: the kitsune-mantra window.
+ * Tap the cards or type their numbers to set the fold order; sealing
+ * hands the result to mantraconf.py, which writes theme.conf at mode 600. */
+
 import QtQuick
 import QtQuick.Controls
 import Quickshell.Io
@@ -62,14 +60,14 @@ Item {
             root._standingOrder = r.order;
             root._keySet = r.keySet;
             root._loaded = true;
-            root._status = r.exists ? "your standing settings — speak a new order, or leave the fan be"
-                                     : "no settings file yet — the canon order stands as the example";
+            root._status = r.exists ? "your standing settings: speak a new order, or leave the fan be"
+                                     : "no settings file yet: the canon order stands as the example";
         } catch (e) { root._defaults(); }
     }
     function _defaults() {
         root._standingOrder = root._foldIds.slice();
         root._loaded = true;
-        root._status = "no settings file yet — the canon order stands as the example";
+        root._status = "no settings file yet: the canon order stands as the example";
     }
 
     function _effectiveOrder() {
@@ -87,7 +85,7 @@ Item {
         if (root._order.indexOf(id) >= 0 || root._order.length >= 7) return;
         root._touched = true;
         root._order = root._order.concat([id]);
-        root._status = root._order.length === 7 ? "your order is whole — seal it, or rehearse it first"
+        root._status = root._order.length === 7 ? "your order is whole: seal it, or rehearse it first"
                                                  : "spoken · " + root._order.length + " of 7";
     }
     function _unspeak() {
@@ -99,7 +97,7 @@ Item {
     function _startRehearsal() {
         root._rehearse = true;
         root._redeal();
-        root._status = "practice deals — answer in your order, then invoke with enter · the door keeps her three-strike rule; practice has none";
+        root._status = "practice deals: answer in your order, then invoke with enter. The door allows " + root._attempts + " attempts; practice has no limit.";
         root.forceActiveFocus();
     }
     function _redeal() {
@@ -117,25 +115,25 @@ Item {
         root._tryEntry = root._tryEntry.concat([pos]);
         if (root._tryEntry.length === 7) {
             root._tryReady = true;
-            root._status = "spoken whole — invoke with enter";
+            root._status = "spoken whole: invoke with enter";
         }
     }
     function _trySubmit() {
-        if (root._tryEntry.length < 7) { root._status = "the mantra is sevenfold — speak it whole, then invoke"; return; }
+        if (root._tryEntry.length < 7) { root._status = "the mantra is sevenfold: speak it whole, then invoke"; return; }
         const spoken = root._tryEntry.map(p => root._deal[p - 1]);
         if (spoken.join(",") === root._effectiveOrder().join(",")) {
             root._status = "the door would open · your mantra holds";
             root._tryEntry = [];
             root._tryReady = false;
         } else {
-            root._status = "she would redeal — again";
+            root._status = "she would redeal: again";
             root._redeal();
         }
     }
 
     function _seal() {
         if (root._touched && root._order.length < 7) {
-            root._status = "your order is sevenfold — speak it whole before sealing, or start over";
+            root._status = "your order is sevenfold: speak it whole before sealing, or start over";
             return;
         }
         root._status = "sealing…";
@@ -147,7 +145,7 @@ Item {
         id: sealWatch
         interval: 4000
         repeat: false
-        onTriggered: if (root._status === "sealing…") root._status = "the writer did not answer — nothing was sealed";
+        onTriggered: if (root._status === "sealing…") root._status = "the writer did not answer: nothing was sealed";
     }
     Process {
         id: writer
@@ -161,7 +159,7 @@ Item {
                 passAction: action, pass: pwField.text }) + "\n");
         }
         onExited: (code) => {
-            if (code !== 0) { root._status = "the writer refused — nothing was sealed"; return; }
+            if (code !== 0) { root._status = "the writer refused: nothing was sealed"; return; }
             try {
                 const r = JSON.parse(root._report);
                 root._keySet = r.keySet;
@@ -208,7 +206,7 @@ Item {
         anchors.margins: 28
         spacing: 2
         Text {
-            text: "KITSUNE — SET YOUR MANTRA"
+            text: "KITSUNE · SET YOUR MANTRA"
             color: root.palText
             font.family: root.fontFace
             font.pixelSize: 15
@@ -259,7 +257,7 @@ Item {
             wrapMode: Text.WordWrap
             text: {
                 if (root._rehearse) return root._tryEntry.length
-                    ? root._words(root._tryEntry.map(p => root._deal[p - 1])) : "—";
+                    ? root._words(root._tryEntry.map(p => root._deal[p - 1])) : "…";
                 if (root._order.length) return root._words(root._order);
                 return "standing order · " + root._words(root._standingOrder);
             }
@@ -388,8 +386,8 @@ Item {
             visible: !root._rehearse
             text: root._keySet
                 ? (root._keyAction === "clear" ? "the stored key will be removed on seal"
-                                               : "a key is stored — entering a password replaces it; the key is your password in plain text, in a file only you can read")
-                : "no key stored — without one, a right sequence opens the password field"
+                                               : "a key is stored: entering a password replaces it; the key is your password in plain text, in a file only you can read")
+                : "no key stored: without one, a right sequence opens the password field"
             color: Qt.alpha(root.palText, 0.55)
             font.family: root.fontFace
             font.pixelSize: 11
@@ -427,7 +425,7 @@ Item {
 
         Text {
             visible: !root._rehearse
-            text: "keys · 1–7 speak · backspace un-speak · g gate · − + attempts · p password · v show · enter seal"
+            text: "keys · 1-7 speak · backspace un-speak · g gate · − + attempts · p password · v show · enter seal"
             color: Qt.alpha(root.palText, 0.4)
             font.family: root.fontFace
             font.pixelSize: 11
@@ -437,7 +435,7 @@ Item {
             visible: root._rehearse
             spacing: 26
             Text {
-                text: "esc — back to your settings"
+                text: "esc · back to your settings"
                 color: Qt.alpha(root.palText, 0.6)
                 font.family: root.fontFace
                 font.pixelSize: 12
@@ -445,7 +443,7 @@ Item {
                             onClicked: root._rehearse = false }
             }
             Text {
-                text: "keys · 1–7 answer · backspace un-speak · enter invoke"
+                text: "keys · 1-7 answer · backspace un-speak · enter invoke"
                 color: Qt.alpha(root.palText, 0.4)
                 font.family: root.fontFace
                 font.pixelSize: 11
